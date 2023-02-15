@@ -14,15 +14,26 @@ import cancel from "./assets/cancel.svg";
 
 export class Person {
   name: string;
-  totals: number[];
-  setTotals: StateUpdater<number[]>;
-
+  items: { id: number; price: number }[];
+  setItems: StateUpdater<{ id: number; price: number }[]>;
+  total: number;
+  setTotal: StateUpdater<number>;
   constructor(name: string) {
     this.name = name;
-    [this.totals, this.setTotals] = useState<number[]>([]);
+    [this.items, this.setItems] = useState<{ id: number; price: number }[]>([]);
+    [this.total, this.setTotal] = useState(0);
+    useEffect(() => {
+      this.setTotal(this.items.reduce((acc, item) => acc + item.price, 0));
+    }, [this.items]);
   }
-  addItem(item: number) {
-    this.setTotals((old) => [...old, item]);
+  addItem(item: { id: number; price: number }) {
+    this.setItems((old) => [...old, item]);
+  }
+  removeItem(id: number) {
+    this.setItems((old) => old.filter((i) => i.id !== id));
+  }
+  getID() {
+    return this.items.length;
   }
 }
 
@@ -150,7 +161,7 @@ export function App() {
   return (
     <div className="w-screen overflow-hidden">
       <TopBar />
-      <div className="grid grid-cols-1">
+      <div className="grid grid-cols-2">
         <div className="border w-auto h-auto">
           <Headings />
           {Object.values(people).map((person) => (
@@ -185,6 +196,14 @@ export function App() {
               setShared,
             }}
           />
+        </div>
+        <div className="p-2 border">
+          <p className="font-semibold">Totals:</p>
+          {Object.values(people).map((person) => (
+            <p>
+              {person.name}: £{person.total.toFixed(2)}
+            </p>
+          ))}
         </div>
       </div>
     </div>

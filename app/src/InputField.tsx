@@ -10,18 +10,18 @@ import { Person } from "./app";
 import remove from "./assets/cancel.svg";
 
 function ItemsDisplay(props: {
-  items: number[];
-  removeItem: (index: number) => void;
+  items: { ids: number[]; price: number }[];
+  removeItem: (ids: number[]) => void;
 }) {
   return (
     <p className="col-span-2">
       {props.items.map((item, index) => (
         <div className="inline-flex align-middle mr-3">
-          <span className="mr-1">£{item.toFixed(2)}</span>
+          <span className="mr-1">£{item.price.toFixed(2)}</span>
           <button
             title="Remove"
             type="button"
-            onClick={() => props.removeItem(index)}
+            onClick={() => props.removeItem(item.ids)}
             tabIndex={-1}
           >
             <img src={remove} alt="remove" className="w-3" />
@@ -35,19 +35,29 @@ function ItemsDisplay(props: {
 export function InputSection(props: {
   people: Person[];
   handleNameClick: (event: Event) => void;
-  className?: string;
   index: number;
+  className?: string;
 }) {
   const [shouldFocus, setShouldFocus] = useState(false);
-  const [items, updateItems] = useState<number[]>([]);
+  const [items, updateItems] = useState<{ ids: number[]; price: number }[]>([]);
   const ref = useRef(null) as RefObject<HTMLInputElement>;
 
-  function addItem(item: number) {
-    updateItems((old) => [...old, item]);
+  function addItem(price: number) {
+    const ids = props.people.map((p) => p.getID());
+    updateItems((old) => [...old, { ids, price }]);
+    props.people.forEach((p) =>
+      p.addItem({ id: p.getID(), price: price / props.people.length })
+    );
   }
 
-  function removeItem(index: number) {
-    updateItems((old) => old.filter((_, i) => i !== index));
+  const compArrays = (a: number[], b: number[]) => {
+    if (a.length !== b.length) return false;
+    return a.every((v, i) => v === b[i]);
+  };
+
+  function removeItem(ids: number[]) {
+    updateItems((old) => old.filter((i) => !compArrays(i.ids, ids)));
+    props.people.forEach((p, index) => p.removeItem(ids[index]));
   }
 
   // Refocus input after adding an item
@@ -56,7 +66,7 @@ export function InputSection(props: {
     setShouldFocus(false);
   }, [shouldFocus]);
 
-  // No input focussed by default
+  // No input focussed on start
   useEffect(() => {
     ref.current?.blur();
   }, []);
@@ -81,9 +91,6 @@ export function InputSection(props: {
             return ((e.target as HTMLInputElement).value = "");
           }
           addItem(newValue);
-          props.people.forEach((p) =>
-            p.addItem(newValue / props.people.length)
-          );
           e.target.value = "";
         }}
       ></input>
@@ -95,7 +102,8 @@ export function InputSection(props: {
             <p>
               {items.length > 0
                 ? `${prefix}£${(
-                    items.reduce((a, b) => a + b) / props.people.length
+                    items.map((i) => i.price).reduce((a, b) => a + b) /
+                    props.people.length
                   ).toFixed(2)}`
                 : ""}
             </p>
