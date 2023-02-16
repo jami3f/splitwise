@@ -14,19 +14,19 @@ import cancel from "./assets/cancel.svg";
 
 export class Person {
   name: string;
-  items: { id: number; price: number }[];
-  setItems: StateUpdater<{ id: number; price: number }[]>;
+  items: Item[];
+  setItems: StateUpdater<Item[]>;
   total: number;
   setTotal: StateUpdater<number>;
   constructor(name: string) {
     this.name = name;
-    [this.items, this.setItems] = useState<{ id: number; price: number }[]>([]);
+    [this.items, this.setItems] = useState<Item[]>([]);
     [this.total, this.setTotal] = useState(0);
     useEffect(() => {
       this.setTotal(this.items.reduce((acc, item) => acc + item.price, 0));
     }, [this.items]);
   }
-  addItem(item: { id: number; price: number }) {
+  addItem(item: Item) {
     this.setItems((old) => [...old, item]);
   }
   removeItem(id: number) {
@@ -123,6 +123,11 @@ function AddSharedButton(props: {
   );
 }
 
+interface Item {
+  id: number;
+  price: number;
+}
+
 export function App() {
   function handleNameClick(event: Event) {
     const name = (event.target as HTMLParagraphElement).innerText;
@@ -144,6 +149,8 @@ export function App() {
   const [shared, setShared] = useState<Person[][]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selection, setSelection] = useState<Person[]>([]);
+  const [promotion, setPromotion] = useState(0);
+  const [maxPromotion, setMaxPromotion] = useState(0);
 
   function Headings() {
     return (
@@ -164,6 +171,13 @@ export function App() {
       <div className="grid grid-cols-2">
         <div className="border w-auto h-auto">
           <Headings />
+          <InputSection
+            className="text-orange-500"
+            people={[...Object.values(people)]}
+            name="Service"
+            index={keyCounter++}
+            handleNameClick={() => {}}
+          />
           {Object.values(people).map((person) => (
             <InputSection
               className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
@@ -172,12 +186,6 @@ export function App() {
               handleNameClick={handleNameClick}
             />
           ))}
-          <InputSection
-            className="text-orange-500"
-            people={[new Person("Service")]}
-            index={keyCounter++}
-            handleNameClick={() => {}}
-          />
           {shared.map((people) => (
             <InputSection
               className="text-gray-700"
@@ -198,7 +206,7 @@ export function App() {
           />
         </div>
         <div className="p-2 border">
-          <p className="font-semibold">Totals:</p>
+          <p className="font-semibold">Subtotals:</p>
           {Object.values(people).map((person) => (
             <p>
               {person.name}: £{person.total.toFixed(2)}

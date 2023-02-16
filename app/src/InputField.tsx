@@ -9,8 +9,13 @@ import { RefObject } from "preact";
 import { Person } from "./app";
 import remove from "./assets/cancel.svg";
 
+interface SharedItem {
+  ids: number[];
+  price: number;
+}
+
 function ItemsDisplay(props: {
-  items: { ids: number[]; price: number }[];
+  items: SharedItem[];
   removeItem: (ids: number[]) => void;
 }) {
   return (
@@ -32,14 +37,34 @@ function ItemsDisplay(props: {
   );
 }
 
+function TotalDisplay(props:{people: Person[], items: SharedItem[]})
+{
+  return(<p className="col-span-2 inline">
+  {props.people.map((p, _, arr) => {
+    const prefix = arr.length > 1 ? p.name + ": " : "";
+    return (
+      <p>
+        {props.items.length > 0
+          ? `${prefix}£${(
+              props.items.map((i) => i.price).reduce((a, b) => a + b) /
+              props.people.length
+            ).toFixed(2)}`
+          : ""}
+      </p>
+    );
+  })}
+</p>)
+}
+
 export function InputSection(props: {
   people: Person[];
   handleNameClick: (event: Event) => void;
   index: number;
   className?: string;
+  name?: string;
 }) {
   const [shouldFocus, setShouldFocus] = useState(false);
-  const [items, updateItems] = useState<{ ids: number[]; price: number }[]>([]);
+  const [items, updateItems] = useState<SharedItem[]>([]);
   const ref = useRef(null) as RefObject<HTMLInputElement>;
 
   function addItem(price: number) {
@@ -77,7 +102,7 @@ export function InputSection(props: {
         onClick={props.handleNameClick}
         className={"self-center w-1/4 " + props.className}
       >
-        {props.people.map((p) => p.name).join("\n")}
+        {props.name || props.people.map((p) => p.name).join("\n")}
       </p>
       <input
         ref={ref}
@@ -95,21 +120,7 @@ export function InputSection(props: {
         }}
       ></input>
       <ItemsDisplay items={items} removeItem={removeItem} />
-      <p className="col-span-2 inline">
-        {props.people.map((p, _, arr) => {
-          const prefix = arr.length > 1 ? p.name + ": " : "";
-          return (
-            <p>
-              {items.length > 0
-                ? `${prefix}£${(
-                    items.map((i) => i.price).reduce((a, b) => a + b) /
-                    props.people.length
-                  ).toFixed(2)}`
-                : ""}
-            </p>
-          );
-        })}
-      </p>
+      <TotalDisplay people={props.people} items={items} />
     </div>
   );
 }

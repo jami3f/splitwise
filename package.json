@@ -1,7 +1,9 @@
 {
   "scripts": {
     "start": "node server/index.js",
-    "dev": "cd app && npm run dev"},
+    "dev": "cd app && npm run dev",
+    "build": "cd app && npm run build"
+  },
   "devDependencies": {
     "nodemon": "^2.0.20",
     "tailwindcss": "^3.2.4"
