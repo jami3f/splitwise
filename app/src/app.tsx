@@ -7,7 +7,7 @@ import {
 } from "preact/hooks";
 import preactLogo from "./assets/preact.svg";
 import { JSX } from "preact/jsx-runtime";
-import { InputSection } from "./InputField";
+import { InputSection, DisplayType } from "./InputField";
 import add from "./assets/add.svg";
 import done from "./assets/done.svg";
 import cancel from "./assets/cancel.svg";
@@ -18,6 +18,7 @@ export class Person {
   setItems: StateUpdater<Item[]>;
   total: number;
   setTotal: StateUpdater<number>;
+  limit = 0;
   constructor(name: string) {
     this.name = name;
     [this.items, this.setItems] = useState<Item[]>([]);
@@ -123,12 +124,30 @@ function AddSharedButton(props: {
   );
 }
 
+function Headings() {
+  return (
+    <div className="p-2 grid grid-cols-7 gap-x-2 border-b">
+      <div className="font-semibold col-span-2">Name </div>
+      <div className="font-semibold">Price </div>
+      <div className="font-semibold col-span-2">Items</div>
+      <div className="font-semibold col-span-2">Total</div>
+    </div>
+  );
+}
+
 interface Item {
   id: number;
   price: number;
 }
 
 export function App() {
+  const people: { [key: string]: Person } = {
+    Dan: new Person("Dan"),
+    Jamie: new Person("Jamie"),
+    Leena: new Person("Leena"),
+    Sophie: new Person("Sophie"),
+  };
+
   function handleNameClick(event: Event) {
     const name = (event.target as HTMLParagraphElement).innerText;
     if (selection.filter((i) => i.name === name).length > 0) {
@@ -139,50 +158,46 @@ export function App() {
     setSelection((old) => [...old, people[name]]);
   }
 
-  const people: { [key: string]: Person } = {
-    Dan: new Person("Dan"),
-    Jamie: new Person("Jamie"),
-    Leena: new Person("Leena"),
-    Sophie: new Person("Sophie"),
-  };
+  const service = new Person("Service");
+  const promotion = new Person("Promotion");
+  const maxPromotion = new Person("Max Promotion");
+  promotion.limit = 1;
+  maxPromotion.limit = 1;
 
   const [shared, setShared] = useState<Person[][]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selection, setSelection] = useState<Person[]>([]);
-  const [promotion, setPromotion] = useState(0);
-  const [maxPromotion, setMaxPromotion] = useState(0);
-
-  function Headings() {
-    return (
-      <div className="grid grid-cols-6 p-2 ">
-        <div className="font-semibold">Name </div>
-        <div className="font-semibold">Price </div>
-        <div className="font-semibold col-span-2">Items</div>
-        <div className="font-semibold col-span-2">Total</div>
-      </div>
-    );
-  }
-
-  let keyCounter = 1;
+  // const [promotion, setPromotion] = useState(0);
+  // const [maxPromotion, setMaxPromotion] = useState(0);
+  // const [serviceCharge, setServiceCharge] = useState(0);
 
   return (
     <div className="w-screen overflow-hidden">
       <TopBar />
       <div className="grid grid-cols-2">
-        <div className="border w-auto h-auto">
+        <div className=" w-auto h-auto border-b">
           <Headings />
           <InputSection
+            className="text-green-700"
+            people={[promotion, maxPromotion, ...Object.values(people)]}
+            name="Promotion"
+            handleNameClick={() => {}}
+            limit={1}
+          />
+          <InputSection
+            className="text-green-500"
+            people={[maxPromotion]}
+            handleNameClick={() => {}}
+          />
+          <InputSection
             className="text-orange-500"
-            people={[...Object.values(people)]}
-            name="Service"
-            index={keyCounter++}
+            people={[service]}
             handleNameClick={() => {}}
           />
           {Object.values(people).map((person) => (
             <InputSection
               className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
               people={[person]}
-              index={keyCounter++}
               handleNameClick={handleNameClick}
             />
           ))}
@@ -190,7 +205,6 @@ export function App() {
             <InputSection
               className="text-gray-700"
               people={[...people]}
-              index={keyCounter++}
               handleNameClick={() => {}}
             ></InputSection>
           ))}
