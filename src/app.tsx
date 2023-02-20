@@ -8,6 +8,7 @@ import {
 import preactLogo from "./assets/preact.svg";
 import { JSX } from "preact/jsx-runtime";
 import { InputSection, DisplayType } from "./InputField";
+import PromotionTotal from "./components/PromotionTotal";
 import add from "./assets/add.svg";
 import done from "./assets/done.svg";
 import cancel from "./assets/cancel.svg";
@@ -135,6 +136,45 @@ function Headings() {
   );
 }
 
+function SubtotalView(props: { people: Person[] }) {
+  return (
+    <div className="p-2 border-r pr-5">
+      <p className="font-semibold">Subtotals:</p>
+      {props.people.filter(p => p.total > 0).map((person) => (
+        <p>
+          {person.name}: £{person.total.toFixed(2)}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function TotalView(props: {
+  people: Person[];
+  promotion: number;
+  maxPromotion: number;
+  service: number;
+}) {
+  const peopleFiltered = props.people.filter(p => p.total > 0);
+  return (
+    <div className="p-2 pr-5">
+      <p className="font-semibold">Totals:</p>
+      <p>
+        {peopleFiltered.map((person) => {
+          const totalNoService = person.total * ((100 - props.promotion) / 100);
+          const total = totalNoService + (props.service/peopleFiltered.length);
+          return (
+            <p>
+              {" "}
+              {person.name}: £{total.toFixed(2)}
+            </p>
+          );
+        })}
+      </p>
+    </div>
+  );
+}
+
 interface Item {
   id: number;
   price: number;
@@ -167,9 +207,6 @@ export function App() {
   const [shared, setShared] = useState<Person[][]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selection, setSelection] = useState<Person[]>([]);
-  // const [promotion, setPromotion] = useState(0);
-  // const [maxPromotion, setMaxPromotion] = useState(0);
-  // const [serviceCharge, setServiceCharge] = useState(0);
 
   return (
     <div className="w-screen overflow-hidden">
@@ -183,7 +220,13 @@ export function App() {
             name="Promotion"
             handleNameClick={() => {}}
             limit={1}
-          />
+          >
+            <PromotionTotal
+              promotion={promotion.items[0]?.price}
+              maxPromotion={maxPromotion.items[0]?.price}
+              people={[...Object.values(people)]}
+            />
+          </InputSection>
           <InputSection
             className="text-green-500"
             people={[maxPromotion]}
@@ -219,13 +262,14 @@ export function App() {
             }}
           />
         </div>
-        <div className="p-2 border">
-          <p className="font-semibold">Subtotals:</p>
-          {Object.values(people).map((person) => (
-            <p>
-              {person.name}: £{person.total.toFixed(2)}
-            </p>
-          ))}
+        <div className="grid grid-cols-2 border w-fit">
+          <SubtotalView people={[...Object.values(people), service]} />
+          <TotalView
+            promotion={promotion.total}
+            maxPromotion={maxPromotion.total}
+            service={service.total}
+            people={Object.values(people)}
+          />
         </div>
       </div>
     </div>

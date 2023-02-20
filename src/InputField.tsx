@@ -9,8 +9,6 @@ import { JSX, RefObject } from "preact";
 import { Person } from "./app";
 import remove from "./assets/cancel.svg";
 
-import { PromotionTotal } from "./components/PromotionTotal";
-
 export interface SharedItem {
   ids: number[];
   price: number;
@@ -27,9 +25,9 @@ export function ItemsDisplay(props: {
   type: DisplayType;
 }) {
   return (
-    <p className="col-span-2">
+    <div className="col-span-2 flex">
       {props.items.map((item, index) => (
-        <div className="inline-flex align-middle mr-3">
+        <div className="inline-flex mr-3 self-center">
           <span className="mr-1">
             {props.type === DisplayType.Price && "£"}
             {item.price.toFixed(2).toString()}
@@ -45,7 +43,7 @@ export function ItemsDisplay(props: {
           </button>
         </div>
       ))}
-    </p>
+    </div>
   );
 }
 
@@ -75,6 +73,7 @@ export function InputSection(props: {
   className?: string;
   name?: string;
   limit?: number;
+  children?: JSX.Element;
 }) {
   const [shouldFocus, setShouldFocus] = useState(false);
   const [items, updateItems] = useState<SharedItem[]>([]);
@@ -132,8 +131,10 @@ export function InputSection(props: {
           ) {
             return ((e.target as HTMLInputElement).value = "");
           }
-          if (promotion) updateItems([{ ids: [0], price: newValue }]);
-          else addItem(newValue);
+          if (promotion) {
+            updateItems([{ ids: [0], price: newValue }]);
+            props.people[0].setItems([{ id: 0, price: newValue }]);
+          } else addItem(newValue);
           e.target.value = "";
         }}
       ></input>
@@ -142,8 +143,8 @@ export function InputSection(props: {
         removeItem={removeItem}
         type={promotion ? DisplayType.Percent : DisplayType.Price}
       />
-      {promotion ? (
-        <PromotionTotal people={props.people} />
+      {props.children ? (
+        props.children
       ) : (
         <TotalDisplay people={props.people} items={items} />
       )}
