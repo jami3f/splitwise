@@ -6,8 +6,8 @@ import {
   EffectCallback,
 } from "preact/hooks";
 import { JSX, RefObject } from "preact";
-import { Person } from "./app";
-import remove from "./assets/cancel.svg";
+import { Person } from "../app";
+import remove from "../assets/cancel.svg";
 
 export interface SharedItem {
   ids: number[];

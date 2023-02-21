@@ -7,7 +7,8 @@ import {
 } from "preact/hooks";
 import preactLogo from "./assets/preact.svg";
 import { JSX } from "preact/jsx-runtime";
-import { InputSection, DisplayType } from "./InputField";
+import { InputSection, DisplayType } from "./components/InputField";
+import Tooltip from "./components/Tooltip"
 import PromotionTotal from "./components/PromotionTotal";
 import add from "./assets/add.svg";
 import done from "./assets/done.svg";
@@ -159,26 +160,36 @@ function TotalView(props: {
 }) {
   const peopleFiltered = props.people.filter((p) => p.total > 0);
   let usePromotion = true;
-  if (peopleFiltered.reduce((acc, p) => acc + p.total, 0) > props.maxPromotion)
+  const grandTotal = peopleFiltered.reduce((acc, p) => acc + p.total, 0);
+  if (props.maxPromotion > 0 && grandTotal > props.maxPromotion)
     usePromotion = false;
   const calculateTotalWithPromotion = (total: number) => {
-    if (usePromotion) return total * ((100 - props.promotion) / 100);
-    else return total;
+    if (
+      props.maxPromotion == 0 ||
+      grandTotal < props.maxPromotion / (props.promotion / 100)
+    )
+      // doesn't hit max promotion - applies promotion to each person's order
+      return total * ((100 - props.promotion) / 100);
+    // hits max promotion and calculates how much to take off each person's order
+    else return total - (total / grandTotal) * props.maxPromotion;
   };
+  const totals = peopleFiltered.map((person) => {
+    const totalNoService = calculateTotalWithPromotion(person.total);
+    const individualTotal =
+      totalNoService + props.service / peopleFiltered.length;
+    return { name: person.name, total: individualTotal };
+  });
+
   return (
     <div className="p-2 pr-5">
       <p className="font-semibold">Totals:</p>
-      <p>
-        {peopleFiltered.map((person) => {
-          const totalNoService = calculateTotalWithPromotion(person.total);
-          const total = totalNoService + props.service / peopleFiltered.length;
-          return (
-            <p>
-              {" "}
-              {person.name}: £{total.toFixed(2)}
-            </p>
-          );
-        })}
+      {totals.map((person) => (
+        <p>
+          {person.name}: £{person.total.toFixed(2)}
+        </p>
+      ))}
+      <p className="pt-5">
+        Total: £{totals.reduce((acc, p) => acc + p.total, 0).toFixed(2)}
       </p>
     </div>
   );
@@ -281,6 +292,7 @@ export function App() {
           />
         </div>
       </div>
+      {/* <Tooltip><div><p></p></div></Tooltip> */}
     </div>
   );
 }

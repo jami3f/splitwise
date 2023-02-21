@@ -1,7 +1,7 @@
 import { useEffect } from "preact/hooks";
 import { Person } from "../app";
 
-export default function PromotionTotal(props: {
+export default function MaxPromotionTotal(props: {
   promotion: number;
   maxPromotion: number;
   people: Person[];
