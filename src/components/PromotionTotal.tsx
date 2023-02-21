@@ -16,10 +16,8 @@ export default function PromotionTotal(props: {
       {props.people.map((p) => {
         return (
           <p>
-            {p.name +
-              ": " +
-              "£" +
-              (p.total * (props.promotion / 100)).toFixed(2)}
+            {p.name}: £
+            {(p.total * (props.promotion / 100)).toFixed(2)}
           </p>
         );
       })}

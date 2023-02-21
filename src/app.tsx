@@ -140,11 +140,13 @@ function SubtotalView(props: { people: Person[] }) {
   return (
     <div className="p-2 border-r pr-5">
       <p className="font-semibold">Subtotals:</p>
-      {props.people.filter(p => p.total > 0).map((person) => (
-        <p>
-          {person.name}: £{person.total.toFixed(2)}
-        </p>
-      ))}
+      {props.people
+        .filter((p) => p.total > 0)
+        .map((person) => (
+          <p>
+            {person.name}: £{person.total.toFixed(2)}
+          </p>
+        ))}
     </div>
   );
 }
@@ -155,14 +157,21 @@ function TotalView(props: {
   maxPromotion: number;
   service: number;
 }) {
-  const peopleFiltered = props.people.filter(p => p.total > 0);
+  const peopleFiltered = props.people.filter((p) => p.total > 0);
+  let usePromotion = true;
+  if (peopleFiltered.reduce((acc, p) => acc + p.total, 0) > props.maxPromotion)
+    usePromotion = false;
+  const calculateTotalWithPromotion = (total: number) => {
+    if (usePromotion) return total * ((100 - props.promotion) / 100);
+    else return total;
+  };
   return (
     <div className="p-2 pr-5">
       <p className="font-semibold">Totals:</p>
       <p>
         {peopleFiltered.map((person) => {
-          const totalNoService = person.total * ((100 - props.promotion) / 100);
-          const total = totalNoService + (props.service/peopleFiltered.length);
+          const totalNoService = calculateTotalWithPromotion(person.total);
+          const total = totalNoService + props.service / peopleFiltered.length;
           return (
             <p>
               {" "}
