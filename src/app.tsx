@@ -8,11 +8,12 @@ import {
 import preactLogo from "./assets/preact.svg";
 import { JSX } from "preact/jsx-runtime";
 import { InputSection, DisplayType } from "./components/InputField";
-import Tooltip from "./components/Tooltip"
+import Tooltip from "./components/Tooltip";
 import PromotionTotal from "./components/PromotionTotal";
 import add from "./assets/add.svg";
 import done from "./assets/done.svg";
 import cancel from "./assets/cancel.svg";
+import { RefObject } from "preact";
 
 export class Person {
   name: string;
@@ -126,6 +127,17 @@ function AddSharedButton(props: {
   );
 }
 
+function showToolTip(e: Event, ref: RefObject<HTMLDivElement>) {
+  const target = e.target as HTMLElement;
+  const tooltip = ref.current;
+  if (tooltip) {
+    tooltip.style.display = "block";
+    tooltip.style.left = `${target.offsetLeft + target.offsetWidth}px`;
+    tooltip.style.top = `${target.offsetTop}px`;
+    tooltip.innerHTML = target.title;
+  }
+}
+
 function Headings() {
   return (
     <div className="p-2 grid grid-cols-7 gap-x-2 border-b">
@@ -212,7 +224,6 @@ export function App() {
     const name = (event.target as HTMLParagraphElement).innerText;
     if (selection.filter((i) => i.name === name).length > 0) {
       setSelection((old) => old.filter((person) => person.name !== name));
-      console.log(selection.map((i) => i.name));
       return;
     }
     setSelection((old) => [...old, people[name]]);
@@ -228,6 +239,8 @@ export function App() {
   const [selectionMode, setSelectionMode] = useState(false);
   const [selection, setSelection] = useState<Person[]>([]);
 
+  let keyCount = 0;
+
   return (
     <div className="w-screen overflow-hidden">
       <TopBar />
@@ -235,6 +248,7 @@ export function App() {
         <div className=" w-auto h-auto border-b">
           <Headings />
           <InputSection
+            passedKey={keyCount++}
             className="text-green-700"
             people={[promotion, maxPromotion, ...Object.values(people)]}
             name="Promotion"
@@ -248,17 +262,21 @@ export function App() {
             />
           </InputSection>
           <InputSection
+            passedKey={keyCount++}
             className="text-green-500"
             people={[maxPromotion]}
+            limit={1}
             handleNameClick={() => {}}
           />
           <InputSection
+            passedKey={keyCount++}
             className="text-orange-500"
             people={[service]}
             handleNameClick={() => {}}
           />
           {Object.values(people).map((person) => (
             <InputSection
+              passedKey={keyCount++}
               className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
               people={[person]}
               handleNameClick={handleNameClick}
@@ -266,6 +284,7 @@ export function App() {
           ))}
           {shared.map((people) => (
             <InputSection
+              passedKey={keyCount++}
               className="text-gray-700"
               people={[...people]}
               handleNameClick={() => {}}
@@ -292,7 +311,6 @@ export function App() {
           />
         </div>
       </div>
-      {/* <Tooltip><div><p></p></div></Tooltip> */}
     </div>
   );
 }
