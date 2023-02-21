@@ -7,6 +7,14 @@ import {
 } from "preact/hooks";
 import { JSX, RefObject } from "preact";
 import { Person } from "../app";
+import Tooltip from "./Tooltip";
+import {
+  AnimationControls,
+  ControlsAnimationDefinition,
+  motion,
+  useAnimationControls,
+  useTransform,
+} from "framer-motion";
 import remove from "../assets/cancel.svg";
 
 export interface SharedItem {
@@ -23,16 +31,21 @@ export function ItemsDisplay(props: {
   items: SharedItem[];
   removeItem: (ids: number[]) => void;
   type: DisplayType;
+  itemErrorAnimation: AnimationControls;
 }) {
   return (
     <div className="col-span-2 flex">
       {props.items.map((item, index) => (
         <div className="inline-flex mr-3 self-center">
-          <span className="mr-1">
+          <motion.span
+            className="mr-1"
+            animate={props.itemErrorAnimation}
+            transition={{ duration: 0.5 }}
+          >
             {props.type === DisplayType.Price && "£"}
             {item.price.toFixed(2).toString()}
             {props.type === DisplayType.Percent && "%"}
-          </span>
+          </motion.span>
           <button
             title="Remove"
             type="button"
@@ -70,6 +83,7 @@ function TotalDisplay(props: { people: Person[]; items: SharedItem[] }) {
 export function InputSection(props: {
   people: Person[];
   handleNameClick: (event: Event) => void;
+  passedKey: number;
   className?: string;
   name?: string;
   limit?: number;
@@ -108,6 +122,49 @@ export function InputSection(props: {
 
   const promotion = props.name === "Promotion";
 
+  const errorAnimation = useAnimationControls();
+  const errorAnimationKeyframes: ControlsAnimationDefinition = {
+    x: [-5, 5, -5, 5, -5, 0],
+    outlineColor: [
+      "rgb(255, 0, 0)",
+      "rgb(255, 0, 0)",
+      "rgb(255, 0, 0)",
+      "rgb(255, 0, 0)",
+      "rgb(255, 0, 0)",
+      "rgb(0, 0, 0)",
+    ],
+  };
+  const itemErrorAnimation = useAnimationControls();
+  const itemErrorAnimationKeyframes: ControlsAnimationDefinition = {
+    x: [-2, 2, -2, 2, -2, 0],
+    color: [
+      "rgb(255, 0, 0)",
+      "rgb(255, 0, 0)",
+      "rgb(255, 0, 0)",
+      "rgb(255, 0, 0)",
+      "rgb(255, 0, 0)",
+      "rgb(0, 0, 0)",
+    ],
+  };
+
+  const handleInput = (e: any) => {
+    if (e.target.value === "") return;
+    setShouldFocus(true);
+    const newValue = parseFloat(e.target.value);
+    if (isNaN(newValue) || newValue <= 0) {
+      errorAnimation.start(errorAnimationKeyframes);
+      return ((e.target as HTMLInputElement).value = "");
+    } else if (props.limit && items.length >= props.limit) {
+      itemErrorAnimation.start(itemErrorAnimationKeyframes);
+      return ((e.target as HTMLInputElement).value = "");
+    }
+    if (promotion) {
+      updateItems([{ ids: [0], price: newValue }]);
+      props.people[0].setItems([{ id: 0, price: newValue }]);
+    } else addItem(newValue);
+    e.target.value = "";
+  };
+
   return (
     <div className={"p-2 grid grid-cols-7 gap-x-2 border-b"}>
       <p
@@ -116,32 +173,23 @@ export function InputSection(props: {
       >
         {props.name || props.people.map((p) => p.name).join("\n")}
       </p>
-      <input
+      <motion.input
         ref={ref}
         title={props.name || props.people.map((p) => p.name).join("\n")}
-        key={props.people}
+        key={props.passedKey}
+        animate={errorAnimation}
+        transition={{ duration: 0.5 }}
         className="border self-center"
-        onChange={(e: any) => {
-          setShouldFocus(true);
-          const newValue = parseFloat(e.target.value);
-          if (
-            isNaN(newValue) ||
-            newValue <= 0 ||
-            (props.limit && items.length >= props.limit)
-          ) {
-            return ((e.target as HTMLInputElement).value = "");
-          }
-          if (promotion) {
-            updateItems([{ ids: [0], price: newValue }]);
-            props.people[0].setItems([{ id: 0, price: newValue }]);
-          } else addItem(newValue);
-          e.target.value = "";
+        onKeyDown={(e: any) => {
+          if (e.keyCode === 13) handleInput(e);
         }}
-      ></input>
+        onBlur={handleInput}
+      ></motion.input>
       <ItemsDisplay
         items={items}
         removeItem={removeItem}
         type={promotion ? DisplayType.Percent : DisplayType.Price}
+        itemErrorAnimation={itemErrorAnimation}
       />
       {props.children ? (
         props.children

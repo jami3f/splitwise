@@ -6,18 +6,26 @@ export default function MaxPromotionTotal(props: {
   maxPromotion: number;
   people: Person[];
 }) {
-  if (!props.promotion) return <p></p>;
-
+  let maxPromotionHit = false;
+  const grandTotal = props.people.reduce((acc, p) => acc + p.total, 0);
+  if (
+    grandTotal > props.maxPromotion / (props.promotion / 100)
+  )
+    maxPromotionHit = true;
   return (
-    <p className="col-span-2 inline">
-      {props.people.map((p) => {
-        return (
-          <p>
-            {p.name}: £
-            {(p.total * (props.promotion / 100)).toFixed(2)}
-          </p>
-        );
-      })}
-    </p>
+    props.promotion &&
+    props.maxPromotion > 0 && (
+      maxPromotionHit ? "" : <p>Until max promotion:</p>
+
+      // <p className="col-span-2 inline">
+      //   {props.people.map((p) => {
+      //     return (
+      //       <p>
+      //         {p.name}: £{(p.total * (props.promotion / 100)).toFixed(2)}
+      //       </p>
+      //     );
+      //   })}
+      // </p>
+    )
   );
 }

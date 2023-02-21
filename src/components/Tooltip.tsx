@@ -1,11 +1,35 @@
-import { useEffect } from "preact/hooks";
-import { JSX } from "preact/jsx-runtime";
+import { useEffect, useState } from "preact/hooks";
+import { RefObject } from "preact";
+import { JSX } from "preact";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function Tooltip(props: { children: JSX.Element }) {
-  useEffect(() => {
-    for (const child in (props.children as unknown as HTMLElement).innerHTML) {
-      console.log(child);
-    }
-  }, []);
-  return <div className="w-20 h-10 border-2 border-black" />;
+export default function Tooltip(props: {
+  children?: JSX.Element;
+  text: string;
+}) {
+  const [active, setActive] = useState(false);
+
+  return (
+    <div
+      className="inline-block relative w-full"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+    >
+      <AnimatePresence>
+        {active && (
+          <motion.div
+            className="absolute bottom-full w-40 flex justify-center"
+            animate={{ scale: 1, y: -5 }}
+            initial={{ scale: 0, y: 10 }}
+            exit={{ scale: 0, y: 10 }}
+          >
+            <div className="w-full bg-gray-50 text-center rounded-md shadow-md">
+              {props.text}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {props.children}
+    </div>
+  );
 }
