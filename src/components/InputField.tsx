@@ -5,7 +5,8 @@ import {
   StateUpdater,
   EffectCallback,
 } from "preact/hooks";
-import { JSX, RefObject } from "preact";
+import { JSX, Ref, RefObject } from "preact";
+import { ForwardedRef, forwardRef } from "preact/compat";
 import { Person } from "../app";
 import Tooltip from "./Tooltip";
 import {
@@ -80,120 +81,126 @@ function TotalDisplay(props: { people: Person[]; items: SharedItem[] }) {
   );
 }
 
-export function InputSection(props: {
-  people: Person[];
-  handleNameClick: (event: Event) => void;
-  passedKey: number;
-  className?: string;
-  name?: string;
-  limit?: number;
-  children?: JSX.Element;
-}) {
-  const [shouldFocus, setShouldFocus] = useState(false);
-  const [items, updateItems] = useState<SharedItem[]>([]);
-  const ref = useRef(null) as RefObject<HTMLInputElement>;
+export const InputSection = forwardRef(
+  (
+    props: {
+      people: Person[];
+      handleNameClick: (event: Event) => void;
+      passedKey: number;
+      className?: string;
+      name?: string;
+      limit?: number;
+      children?: JSX.Element;
+    },
+    ref: ForwardedRef<HTMLInputElement>
+  ) => {
+    const [shouldFocus, setShouldFocus] = useState(false);
+    const [items, updateItems] = useState<SharedItem[]>([]);
+    // const ref = useRef(null) as RefObject<HTMLInputElement>;
 
-  function addItem(price: number) {
-    const ids = props.people.map((p) => p.getID());
-    updateItems((old) => [...old, { ids, price }]);
-    props.people.forEach((p) =>
-      p.addItem({ id: p.getID(), price: price / props.people.length })
+    function addItem(price: number) {
+      const ids = props.people.map((p) => p.getID());
+      updateItems((old) => [...old, { ids, price }]);
+      props.people.forEach((p) =>
+        p.addItem({ id: p.getID(), price: price / props.people.length })
+      );
+    }
+    function removeItem(ids: number[]) {
+      const compArrays = (a: number[], b: number[]) => {
+        if (a.length !== b.length) return false;
+        return a.every((v, i) => v === b[i]);
+      };
+      updateItems((old) => old.filter((i) => !compArrays(i.ids, ids)));
+      props.people.forEach((p, index) => p.removeItem(ids[index]));
+    }
+
+    // Refocus input after adding an item
+    useEffect(() => {
+      (ref as RefObject<HTMLInputElement>).current?.focus();
+      setShouldFocus(false);
+    }, [shouldFocus]);
+
+    // No input focussed on start
+    useEffect(() => {
+      (ref as RefObject<HTMLInputElement>).current?.blur();
+      // .current.blur();
+    }, []);
+
+    const promotion = props.name === "Promotion";
+
+    const errorAnimation = useAnimationControls();
+    const errorAnimationKeyframes: ControlsAnimationDefinition = {
+      x: [-5, 5, -5, 5, -5, 0],
+      outlineColor: [
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(0, 0, 0)",
+      ],
+    };
+    const itemErrorAnimation = useAnimationControls();
+    const itemErrorAnimationKeyframes: ControlsAnimationDefinition = {
+      x: [-2, 2, -2, 2, -2, 0],
+      color: [
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(0, 0, 0)",
+      ],
+    };
+
+    const handleInput = (e: any) => {
+      if (e.target.value === "") return;
+      setShouldFocus(true);
+      const newValue = parseFloat(e.target.value);
+      if (isNaN(newValue) || newValue <= 0) {
+        errorAnimation.start(errorAnimationKeyframes);
+        return ((e.target as HTMLInputElement).value = "");
+      } else if (props.limit && items.length >= props.limit) {
+        itemErrorAnimation.start(itemErrorAnimationKeyframes);
+        return ((e.target as HTMLInputElement).value = "");
+      }
+      if (promotion) {
+        updateItems([{ ids: [0], price: newValue }]);
+        props.people[0].setItems([{ id: 0, price: newValue }]);
+      } else addItem(newValue);
+      e.target.value = "";
+    };
+
+    return (
+      <div className={"p-2 grid grid-cols-7 gap-x-2 border-b"}>
+        <p
+          onClick={props.handleNameClick}
+          className={"self-center w-1/4 col-span-2" + " " + props.className}
+        >
+          {props.name || props.people.map((p) => p.name).join("\n")}
+        </p>
+        <motion.input
+          ref={ref}
+          title={props.name || props.people.map((p) => p.name).join("\n")}
+          key={props.passedKey}
+          animate={errorAnimation}
+          transition={{ duration: 0.5 }}
+          className="border self-center"
+          onKeyDown={(e: any) => e.keyCode === 13 && handleInput(e)}
+          onBlur={handleInput}
+        ></motion.input>
+        <ItemsDisplay
+          items={items}
+          removeItem={removeItem}
+          type={promotion ? DisplayType.Percent : DisplayType.Price}
+          itemErrorAnimation={itemErrorAnimation}
+        />
+        {props.children ? (
+          props.children
+        ) : (
+          <TotalDisplay people={props.people} items={items} />
+        )}
+      </div>
     );
   }
-  function removeItem(ids: number[]) {
-    const compArrays = (a: number[], b: number[]) => {
-      if (a.length !== b.length) return false;
-      return a.every((v, i) => v === b[i]);
-    };
-    updateItems((old) => old.filter((i) => !compArrays(i.ids, ids)));
-    props.people.forEach((p, index) => p.removeItem(ids[index]));
-  }
-
-  // Refocus input after adding an item
-  useEffect(() => {
-    ref.current?.focus();
-    setShouldFocus(false);
-  }, [shouldFocus]);
-
-  // No input focussed on start
-  useEffect(() => {
-    ref.current?.blur();
-  }, []);
-
-  const promotion = props.name === "Promotion";
-
-  const errorAnimation = useAnimationControls();
-  const errorAnimationKeyframes: ControlsAnimationDefinition = {
-    x: [-5, 5, -5, 5, -5, 0],
-    outlineColor: [
-      "rgb(255, 0, 0)",
-      "rgb(255, 0, 0)",
-      "rgb(255, 0, 0)",
-      "rgb(255, 0, 0)",
-      "rgb(255, 0, 0)",
-      "rgb(0, 0, 0)",
-    ],
-  };
-  const itemErrorAnimation = useAnimationControls();
-  const itemErrorAnimationKeyframes: ControlsAnimationDefinition = {
-    x: [-2, 2, -2, 2, -2, 0],
-    color: [
-      "rgb(255, 0, 0)",
-      "rgb(255, 0, 0)",
-      "rgb(255, 0, 0)",
-      "rgb(255, 0, 0)",
-      "rgb(255, 0, 0)",
-      "rgb(0, 0, 0)",
-    ],
-  };
-
-  const handleInput = (e: any) => {
-    if (e.target.value === "") return;
-    setShouldFocus(true);
-    const newValue = parseFloat(e.target.value);
-    if (isNaN(newValue) || newValue <= 0) {
-      errorAnimation.start(errorAnimationKeyframes);
-      return ((e.target as HTMLInputElement).value = "");
-    } else if (props.limit && items.length >= props.limit) {
-      itemErrorAnimation.start(itemErrorAnimationKeyframes);
-      return ((e.target as HTMLInputElement).value = "");
-    }
-    if (promotion) {
-      updateItems([{ ids: [0], price: newValue }]);
-      props.people[0].setItems([{ id: 0, price: newValue }]);
-    } else addItem(newValue);
-    e.target.value = "";
-  };
-
-  return (
-    <div className={"p-2 grid grid-cols-7 gap-x-2 border-b"}>
-      <p
-        onClick={props.handleNameClick}
-        className={"self-center w-1/4 col-span-2" + " " + props.className}
-      >
-        {props.name || props.people.map((p) => p.name).join("\n")}
-      </p>
-      <motion.input
-        ref={ref}
-        title={props.name || props.people.map((p) => p.name).join("\n")}
-        key={props.passedKey}
-        animate={errorAnimation}
-        transition={{ duration: 0.5 }}
-        className="border self-center"
-        onKeyDown={(e: any) => e.keyCode === 13 && handleInput(e)}
-        onBlur={handleInput}
-      ></motion.input>
-      <ItemsDisplay
-        items={items}
-        removeItem={removeItem}
-        type={promotion ? DisplayType.Percent : DisplayType.Price}
-        itemErrorAnimation={itemErrorAnimation}
-      />
-      {props.children ? (
-        props.children
-      ) : (
-        <TotalDisplay people={props.people} items={items} />
-      )}
-    </div>
-  );
-}
+);

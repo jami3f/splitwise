@@ -239,6 +239,8 @@ export function App() {
   const [selectionMode, setSelectionMode] = useState(false);
   const [selection, setSelection] = useState<Person[]>([]);
 
+  const inputRefs = useRef<RefObject<HTMLInputElement | null>[]>([]);
+
   let keyCount = 0;
 
   return (
@@ -254,6 +256,9 @@ export function App() {
             name="Promotion"
             handleNameClick={() => {}}
             limit={1}
+            ref={(el: RefObject<HTMLInputElement>) =>
+              inputRefs[keyCount - 1].current = el
+            }
           >
             <PromotionTotal
               promotion={promotion.items[0]?.price}
