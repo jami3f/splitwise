@@ -87,6 +87,7 @@ export const InputSection = forwardRef(
       people: Person[];
       handleNameClick: (event: Event) => void;
       passedKey: number;
+      refocus: Function;
       className?: string;
       name?: string;
       limit?: number;
@@ -114,17 +115,17 @@ export const InputSection = forwardRef(
       props.people.forEach((p, index) => p.removeItem(ids[index]));
     }
 
-    // Refocus input after adding an item
-    useEffect(() => {
-      (ref as RefObject<HTMLInputElement>).current?.focus();
-      setShouldFocus(false);
-    }, [shouldFocus]);
+    // // Refocus input after adding an item
+    // useEffect(() => {
+    //   (ref as RefObject<HTMLInputElement>).current?.focus();
+    //   setShouldFocus(false);
+    // }, [shouldFocus]);
 
-    // No input focussed on start
-    useEffect(() => {
-      (ref as RefObject<HTMLInputElement>).current?.blur();
-      // .current.blur();
-    }, []);
+    // // No input focussed on start
+    // useEffect(() => {
+    //   (ref as RefObject<HTMLInputElement>).current?.blur();
+    //   // .current.blur();
+    // }, []);
 
     const promotion = props.name === "Promotion";
 
@@ -169,10 +170,11 @@ export const InputSection = forwardRef(
         props.people[0].setItems([{ id: 0, price: newValue }]);
       } else addItem(newValue);
       e.target.value = "";
+      props.refocus(props.passedKey);
     };
 
     return (
-      <div className={"p-2 grid grid-cols-7 gap-x-2 border-b"}>
+      <div id="item-entry" className="p-2 grid grid-cols-7 gap-x-2 border-b">
         <p
           onClick={props.handleNameClick}
           className={"self-center w-1/4 col-span-2" + " " + props.className}

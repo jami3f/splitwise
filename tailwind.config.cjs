@@ -16,6 +16,9 @@ module.exports = {
       width: {
         "200%": "200%",
       },
+      gridTemplateColumns: {
+        "75/25": "3fr 1fr",
+      }
     },
   },
   plugins: [],

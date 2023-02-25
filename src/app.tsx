@@ -14,6 +14,7 @@ import add from "./assets/add.svg";
 import done from "./assets/done.svg";
 import cancel from "./assets/cancel.svg";
 import { RefObject } from "preact";
+import MaxPromotionTotal from "./components/MaxPromotionTotal";
 
 export class Person {
   name: string;
@@ -239,15 +240,33 @@ export function App() {
   const [selectionMode, setSelectionMode] = useState(false);
   const [selection, setSelection] = useState<Person[]>([]);
 
-  const inputRefs = useRef<RefObject<HTMLInputElement | null>[]>([]);
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
+
+  useEffect(() => {
+    const totalLength = Object.keys(people).length + shared.length + 3;
+    inputRefs.current = inputRefs.current.slice(0, totalLength);
+    console.log(inputRefs.current);
+  }, [shared]);
+
+  function refocus(index: number) {
+    if (index > 1) inputRefs.current[index]?.focus();
+    else {
+      inputRefs.current[index + 1]?.focus();
+    }
+  }
 
   let keyCount = 0;
+  let refCount = 0;
 
   return (
     <div className="w-screen overflow-hidden">
       <TopBar />
-      <div className="grid grid-cols-2">
-        <div className=" w-auto h-auto border-b">
+      <div id="section-container" className="grid grid-cols-75/25">
+        <div id="item-entry-container" className="w-auto h-auto border-b">
           <Headings />
           <InputSection
             passedKey={keyCount++}
@@ -256,9 +275,10 @@ export function App() {
             name="Promotion"
             handleNameClick={() => {}}
             limit={1}
-            ref={(el: RefObject<HTMLInputElement>) =>
-              inputRefs[keyCount - 1].current = el
+            ref={(el: HTMLInputElement | null) =>
+              (inputRefs.current[refCount++] = el)
             }
+            refocus={refocus}
           >
             <PromotionTotal
               promotion={promotion.items[0]?.price}
@@ -272,12 +292,26 @@ export function App() {
             people={[maxPromotion]}
             limit={1}
             handleNameClick={() => {}}
-          />
+            ref={(el: HTMLInputElement | null) =>
+              (inputRefs.current[refCount++] = el)
+            }
+            refocus={refocus}
+          >
+            <MaxPromotionTotal
+              promotion={promotion.items[0]?.price}
+              maxPromotion={maxPromotion.items[0]?.price}
+              people={[...Object.values(people)]}
+            />
+          </InputSection>
           <InputSection
             passedKey={keyCount++}
             className="text-orange-500"
             people={[service]}
             handleNameClick={() => {}}
+            ref={(el: HTMLInputElement | null) =>
+              (inputRefs.current[refCount++] = el)
+            }
+            refocus={refocus}
           />
           {Object.values(people).map((person) => (
             <InputSection
@@ -285,6 +319,10 @@ export function App() {
               className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
               people={[person]}
               handleNameClick={handleNameClick}
+              ref={(el: HTMLInputElement | null) =>
+                (inputRefs.current[refCount++] = el)
+              }
+              refocus={refocus}
             />
           ))}
           {shared.map((people) => (
@@ -293,6 +331,7 @@ export function App() {
               className="text-gray-700"
               people={[...people]}
               handleNameClick={() => {}}
+              refocus={refocus}
             ></InputSection>
           ))}
           <AddSharedButton
