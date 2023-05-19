@@ -265,7 +265,7 @@ export function App() {
   return (
     <div className="w-screen overflow-hidden">
       <TopBar />
-      <div id="section-container" className="grid grid-cols-75/25">
+      <div id="section-container" className="grid md:grid-cols-75/25 grid-rows-2">
         <div id="item-entry-container" className="w-auto h-auto border-b">
           <Headings />
           <InputSection
@@ -345,7 +345,7 @@ export function App() {
             }}
           />
         </div>
-        <div className="grid grid-cols-2 border w-fit">
+        <div className="grid grid-cols-2 border w-full">
           <SubtotalView people={[...Object.values(people), service]} />
           <TotalView
             promotion={promotion.total}
