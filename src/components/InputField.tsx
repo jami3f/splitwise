@@ -190,6 +190,8 @@ export const InputSection = forwardRef(
           className="border self-center"
           onKeyDown={(e: any) => e.keyCode === 13 && handleInput(e)}
           onBlur={handleInput}
+          type="number"
+          inputMode="decimal"
         ></motion.input>
         <ItemsDisplay
           items={items}

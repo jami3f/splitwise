@@ -21,10 +21,7 @@ export default function MaxPromotionTotal(props: {
         (maxPromotionHit ? (
           <p>Getting £{props.maxPromotion.toFixed(2)} off</p>
         ) : (
-          <>
-            <p>Until promotion cap hit:</p>
-            <p>£{untilMax.toFixed(2)}</p>
-          </>
+          <p>£{untilMax.toFixed(2)} to promotion cap</p>
         ))}
     </div>
     // <p className="col-span-2 inline">
