@@ -3,13 +3,15 @@ import Item from "./Item";
 
 export default class Person {
   name: string;
+  id: number;
   items: Item[];
   setItems: StateUpdater<Item[]>;
   total: number;
   setTotal: StateUpdater<number>;
   limit = 0;
-  constructor(name: string) {
+  constructor(name: string, id: number) {
     this.name = name;
+    this.id = id;
     [this.items, this.setItems] = useState<Item[]>([]);
     [this.total, this.setTotal] = useState(0);
     useEffect(() => {
@@ -21,8 +23,5 @@ export default class Person {
   }
   removeItem(id: number) {
     this.setItems((old) => old.filter((i) => i.id !== id));
-  }
-  getID() {
-    return this.items.length;
   }
 }

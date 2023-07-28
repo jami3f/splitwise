@@ -27,10 +27,10 @@ function showToolTip(e: Event, ref: RefObject<HTMLDivElement>) {
 
 export function App() {
   const people: { [key: string]: Person } = {
-    Dan: new Person("Dan"),
-    Jamie: new Person("Jamie"),
-    Leena: new Person("Leena"),
-    Sophie: new Person("Sophie"),
+    Dan: new Person("Dan", 3),
+    Jamie: new Person("Jamie", 4),
+    Leena: new Person("Leena", 5),
+    Sophie: new Person("Sophie", 6),
   };
 
   function handleNameClick(event: Event) {
@@ -42,9 +42,9 @@ export function App() {
     setSelection((old) => [...old, people[name]]);
   }
 
-  const service = new Person("Service");
-  const promotion = new Person("Promotion");
-  const maxPromotion = new Person("Max Promotion");
+  const promotion = new Person("Promotion", 0);
+  const maxPromotion = new Person("Max Promotion", 1);
+  const service = new Person("Service", 2);
   promotion.limit = 1;
   maxPromotion.limit = 1;
 
@@ -72,7 +72,6 @@ export function App() {
   }
 
   let keyCount = 0;
-  let refCount = 0;
 
   return (
     <div className="w-screen overflow-hidden">
@@ -94,7 +93,7 @@ export function App() {
             handleNameClick={() => {}}
             limit={1}
             ref={(el: HTMLInputElement | null) =>
-              (inputRefs.current[refCount++] = el)
+              (inputRefs.current[0] = el)
             }
             refocus={refocus}
           >
@@ -111,7 +110,7 @@ export function App() {
             limit={1}
             handleNameClick={() => {}}
             ref={(el: HTMLInputElement | null) =>
-              (inputRefs.current[refCount++] = el)
+              (inputRefs.current[1] = el)
             }
             refocus={refocus}
           >
@@ -127,7 +126,7 @@ export function App() {
             people={[service]}
             handleNameClick={() => {}}
             ref={(el: HTMLInputElement | null) =>
-              (inputRefs.current[refCount++] = el)
+              (inputRefs.current[2] = el)
             }
             refocus={refocus}
           />
@@ -137,9 +136,6 @@ export function App() {
               className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
               people={[person]}
               handleNameClick={handleNameClick}
-              ref={(el: HTMLInputElement | null) =>
-                (inputRefs.current[refCount++] = el)
-              }
               refocus={refocus}
             />
           ))}
