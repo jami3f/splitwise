@@ -18,7 +18,8 @@ module.exports = {
       },
       gridTemplateColumns: {
         "75/25": "3fr 1fr",
-      }
+        "65/35": "13fr 7fr"
+      },
     },
   },
   plugins: [],

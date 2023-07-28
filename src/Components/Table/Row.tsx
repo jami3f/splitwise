@@ -7,7 +7,7 @@ import {
 } from "preact/hooks";
 import { JSX, Ref, RefObject } from "preact";
 import { ForwardedRef, forwardRef } from "preact/compat";
-import { Person } from "../app";
+import { Person } from "../../Classes";
 import Tooltip from "./Tooltip";
 import {
   AnimationControls,
@@ -16,14 +16,14 @@ import {
   useAnimationControls,
   useTransform,
 } from "framer-motion";
-import remove from "../assets/cancel.svg";
+import { cancel } from "../../assets/icons/";
 
-export interface SharedItem {
+interface SharedItem {
   ids: number[];
   price: number;
 }
 
-export enum DisplayType {
+enum DisplayType {
   Price,
   Percent,
 }
@@ -53,7 +53,7 @@ export function ItemsDisplay(props: {
             onClick={() => props.removeItem(item.ids)}
             tabIndex={-1}
           >
-            <img src={remove} alt="remove" className="w-3" />
+            <img src={cancel} alt="remove" className="w-3" />
           </button>
         </div>
       ))}
@@ -81,7 +81,7 @@ function TotalDisplay(props: { people: Person[]; items: SharedItem[] }) {
   );
 }
 
-export const InputSection = forwardRef(
+const Row = forwardRef(
   (
     props: {
       people: Person[];
@@ -114,18 +114,6 @@ export const InputSection = forwardRef(
       updateItems((old) => old.filter((i) => !compArrays(i.ids, ids)));
       props.people.forEach((p, index) => p.removeItem(ids[index]));
     }
-
-    // // Refocus input after adding an item
-    // useEffect(() => {
-    //   (ref as RefObject<HTMLInputElement>).current?.focus();
-    //   setShouldFocus(false);
-    // }, [shouldFocus]);
-
-    // // No input focussed on start
-    // useEffect(() => {
-    //   (ref as RefObject<HTMLInputElement>).current?.blur();
-    //   // .current.blur();
-    // }, []);
 
     const promotion = props.name === "Promotion";
 
@@ -187,7 +175,7 @@ export const InputSection = forwardRef(
           key={props.passedKey}
           animate={errorAnimation}
           transition={{ duration: 0.5 }}
-          className="border self-center"
+          className="border self-center rounded"
           onKeyDown={(e: any) => e.keyCode === 13 && handleInput(e)}
           onBlur={handleInput}
           type="number"
@@ -208,3 +196,5 @@ export const InputSection = forwardRef(
     );
   }
 );
+
+export default Row;

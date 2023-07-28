@@ -1,5 +1,5 @@
 import { useEffect } from "preact/hooks";
-import { Person } from "../app";
+import { Person } from "../../app";
 
 export default function MaxPromotionTotal(props: {
   promotion: number | undefined;
