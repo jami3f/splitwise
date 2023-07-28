@@ -1,42 +1,52 @@
-import { motion, useAnimationControls } from "framer-motion";
+import { ControlsAnimationDefinition, None, motion, useAnimationControls } from "framer-motion";
 import { RefObject } from "preact";
+
+const ENTER_KEYCODE = 13;
 
 export default function InputField(props: {
   numeric: boolean;
   name: string;
   ref: RefObject<HTMLInputElement>;
+  errorCondition?: boolean;
+  secondaryErrorCondition?: boolean;
   handleInput: Function;
   passedKey: number;
 }) {
   <motion.input
-    ref={ref}
-    title={name}
+    ref={props.ref}
+    title={props.name}
     key={props.passedKey}
     animate={errorAnimation}
     transition={{ duration: 0.5 }}
     className="border self-center rounded"
-    onKeyDown={(e: any) => e.keyCode === 13 && parseInput(e)}
-    onBlur={parseInput}
+    onKeyDown={(e: any) =>
+      e.keyCode === ENTER_KEYCODE &&
+      parseInput(e, props.errorCondition, props.handleInput)
+    }
+    onBlur={(e: any) => parseInput(e, props.errorCondition, props.handleInput)}
     {...(props.numeric && { type: "number", inputMode: "decimal" })}
   ></motion.input>;
 }
 
-const parseInput = (e: any) => {
+const parseInput = (
+  e: any,
+  errorCondition: boolean | undefined,
+  handleInput: Function
+) => {
+  if (errorCondition) {
+    errorAnimation.start(errorAnimationKeyframes);
+    return ((e.target as HTMLInputElement).value = "");
+  }
   if (e.target.value === "") return;
   const newValue = parseFloat(e.target.value);
   if (isNaN(newValue) || newValue <= 0) {
     errorAnimation.start(errorAnimationKeyframes);
     return ((e.target as HTMLInputElement).value = "");
   } else if (props.limit && items.length >= props.limit) {
-    itemErrorAnimation.start(itemErrorAnimationKeyframes);
+    secondaryErrorAnimation.start(secondaryErrorAnimationKeyframes);
     return ((e.target as HTMLInputElement).value = "");
   }
-  if (promotion) {
-    updateItems([{ ids: [0], price: newValue }]);
-    props.people[0].setItems([{ id: 0, price: newValue }]);
-  } else addItem(newValue);
-  e.target.value = "";
-  props.refocus(props.passedKey);
+  handleInput();
 };
 
 const errorAnimation = useAnimationControls();
@@ -51,8 +61,8 @@ const errorAnimationKeyframes: ControlsAnimationDefinition = {
     "rgb(0, 0, 0)",
   ],
 };
-const itemErrorAnimation = useAnimationControls();
-const itemErrorAnimationKeyframes: ControlsAnimationDefinition = {
+const secondaryErrorAnimation = useAnimationControls();
+const secondaryErrorAnimationKeyframes: ControlsAnimationDefinition = {
   x: [-2, 2, -2, 2, -2, 0],
   color: [
     "rgb(255, 0, 0)",
