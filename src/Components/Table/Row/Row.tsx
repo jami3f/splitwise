@@ -46,7 +46,30 @@ const Row = forwardRef(
     const promotion = props.name === "Promotion";
     let name = props.name || props.people.map((p) => p.name).join("\n");
 
-
+    const errorAnimation = useAnimationControls();
+    const errorAnimationKeyframes: ControlsAnimationDefinition = {
+      x: [-5, 5, -5, 5, -5, 0],
+      outlineColor: [
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(0, 0, 0)",
+      ],
+    };
+    const itemErrorAnimation = useAnimationControls();
+    const itemErrorAnimationKeyframes: ControlsAnimationDefinition = {
+      x: [-2, 2, -2, 2, -2, 0],
+      color: [
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(255, 0, 0)",
+        "rgb(0, 0, 0)",
+      ],
+    };
 
     const handleInput = (e: any) => {
       if (e.target.value === "") return;

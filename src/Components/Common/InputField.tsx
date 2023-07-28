@@ -1,4 +1,9 @@
-import { ControlsAnimationDefinition, None, motion, useAnimationControls } from "framer-motion";
+import {
+  ControlsAnimationDefinition,
+  None,
+  motion,
+  useAnimationControls,
+} from "framer-motion";
 import { RefObject } from "preact";
 
 const ENTER_KEYCODE = 13;
@@ -7,9 +12,9 @@ export default function InputField(props: {
   numeric: boolean;
   name: string;
   ref: RefObject<HTMLInputElement>;
-  errorCondition?: boolean;
-  secondaryErrorCondition?: boolean;
-  handleInput: Function;
+  handleInput: (e: string) => void;
+  errorCondition?: (e: any) => boolean;
+  secondaryErrorCondition?: (e: any) => boolean;
   passedKey: number;
 }) {
   <motion.input
@@ -21,32 +26,49 @@ export default function InputField(props: {
     className="border self-center rounded"
     onKeyDown={(e: any) =>
       e.keyCode === ENTER_KEYCODE &&
-      parseInput(e, props.errorCondition, props.handleInput)
+      parseInput(
+        e,
+        props.handleInput,
+        props.errorCondition,
+        props.secondaryErrorCondition
+      )
     }
-    onBlur={(e: any) => parseInput(e, props.errorCondition, props.handleInput)}
+    onBlur={(e: any) =>
+      parseInput(
+        e,
+        props.handleInput,
+        props.errorCondition,
+        props.secondaryErrorCondition
+      )
+    }
     {...(props.numeric && { type: "number", inputMode: "decimal" })}
   ></motion.input>;
 }
 
 const parseInput = (
   e: any,
-  errorCondition: boolean | undefined,
-  handleInput: Function
+  handleInput: (e: string) => void,
+  errorCondition?: (e: any) => boolean,
+  secondaryErrorCondition?: (e: any) => boolean
 ) => {
-  if (errorCondition) {
+  if (errorCondition && errorCondition(e)) {
     errorAnimation.start(errorAnimationKeyframes);
     return ((e.target as HTMLInputElement).value = "");
   }
-  if (e.target.value === "") return;
-  const newValue = parseFloat(e.target.value);
-  if (isNaN(newValue) || newValue <= 0) {
-    errorAnimation.start(errorAnimationKeyframes);
-    return ((e.target as HTMLInputElement).value = "");
-  } else if (props.limit && items.length >= props.limit) {
+  if (secondaryErrorCondition && secondaryErrorCondition(e)) {
     secondaryErrorAnimation.start(secondaryErrorAnimationKeyframes);
     return ((e.target as HTMLInputElement).value = "");
   }
-  handleInput();
+  // if (e.target.value === "") return;
+  // const newValue = parseFloat(e.target.value);
+  // if (isNaN(newValue) || newValue <= 0) {
+  //   errorAnimation.start(errorAnimationKeyframes);
+  //   return ((e.target as HTMLInputElement).value = "");
+  // } else if (props.limit && items.length >= props.limit) {
+  //   secondaryErrorAnimation.start(secondaryErrorAnimationKeyframes);
+  //   return ((e.target as HTMLInputElement).value = "");
+  // }
+  handleInput(e.target.value);
 };
 
 const errorAnimation = useAnimationControls();
