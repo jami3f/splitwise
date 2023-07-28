@@ -9,9 +9,9 @@ export default function ItemsDisplay(props: {
   itemErrorAnimation: AnimationControls;
 }) {
   return (
-    <div className="col-span-2 flex">
+    <div className="col-span-2 flex justify-center">
       {props.items.map((item, index) => (
-        <div className="inline-flex mr-3 self-center">
+        <div className="inline-flex mx-3 self-center">
           <motion.span
             className="mr-1"
             animate={props.itemErrorAnimation}

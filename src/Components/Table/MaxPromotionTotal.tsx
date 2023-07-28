@@ -14,7 +14,7 @@ export default function MaxPromotionTotal(props: {
   const untilMax = props.maxPromotion / (props.promotion / 100) - grandTotal;
 
   return (
-    <div>
+    <div class="col-span-2">
       {props.promotion &&
         props.maxPromotion > 0 &&
         (maxPromotionHit ? (

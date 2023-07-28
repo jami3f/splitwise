@@ -93,7 +93,7 @@ const Row = forwardRef(
       <div id="item-entry" className="p-2 grid grid-cols-7 gap-x-2 border-b">
         <p
           onClick={props.handleNameClick}
-          className={"self-center w-1/4 col-span-2" + " " + props.className}
+          className={"self-center col-span-2" + " " + props.className}
         >
           {name}
         </p>

@@ -42,8 +42,8 @@ export function App() {
     setSelection((old) => [...old, people[name]]);
   }
 
-  const promotion = new Person("Promotion", 0);
-  const maxPromotion = new Person("Max Promotion", 1);
+  const promotion = new Person("Promotion (%)", 0);
+  const maxPromotion = new Person("Promotion Cap", 1);
   const service = new Person("Service", 2);
   promotion.limit = 1;
   maxPromotion.limit = 1;
@@ -82,14 +82,14 @@ export function App() {
       >
         <div
           id="item-entry-container"
-          className="w-auto h-auto border-y border-l"
+          className="w-auto h-auto border-y border-l text-center"
         >
           <Headings />
           <Row
             passedKey={keyCount++}
             className="text-green-700"
             people={[promotion, maxPromotion, ...Object.values(people)]}
-            name="Promotion"
+            name="Promotion (%)"
             handleNameClick={() => {}}
             limit={1}
             ref={(el: HTMLInputElement | null) =>

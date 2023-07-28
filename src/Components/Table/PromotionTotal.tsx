@@ -8,7 +8,7 @@ export default function PromotionTotal(props: {
   people: Person[];
 }) {
   return (
-    <Tooltip text="The discount each person gets">
+    // <Tooltip text="The discount each person gets">
       <AnimatePresence>
         {props.promotion && (
           <motion.p
@@ -27,6 +27,6 @@ export default function PromotionTotal(props: {
           </motion.p>
         )}
       </AnimatePresence>
-    </Tooltip>
+    /* </Tooltip> */
   );
 }
