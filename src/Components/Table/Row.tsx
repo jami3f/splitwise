@@ -1,20 +1,14 @@
 import {
-  useState,
-  useRef,
-  useEffect,
-  StateUpdater,
-  EffectCallback,
+  useState
 } from "preact/hooks";
-import { JSX, Ref, RefObject } from "preact";
+import { JSX } from "preact";
 import { ForwardedRef, forwardRef } from "preact/compat";
 import { Person } from "../../Classes";
-import Tooltip from "./Tooltip";
 import {
   AnimationControls,
   ControlsAnimationDefinition,
   motion,
-  useAnimationControls,
-  useTransform,
+  useAnimationControls
 } from "framer-motion";
 import { cancel } from "../../assets/icons/";
 

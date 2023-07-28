@@ -1,5 +1,4 @@
-import { useEffect, useState } from "preact/hooks";
-import { RefObject } from "preact";
+import { useState } from "preact/hooks";
 import { JSX } from "preact";
 import { motion, AnimatePresence } from "framer-motion";
 

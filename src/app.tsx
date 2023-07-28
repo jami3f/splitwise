@@ -1,21 +1,16 @@
 import {
   useState,
   useRef,
-  useEffect,
-  StateUpdater,
-  EffectCallback,
+  useEffect
 } from "preact/hooks";
 import { RefObject } from "preact";
-import { add, done, cancel } from "./assets/icons";
 import {
   Headings,
-  Row,
-  Tooltip,
-  PromotionTotal,
-  MaxPromotionTotal,
+  Row, PromotionTotal,
+  MaxPromotionTotal
 } from "./Components/Table";
 import { SubtotalView, TotalView } from "./Components/Totals";
-import { CreatePerson, CreateSharedItem } from "./Components/Buttons";
+import { CreateSharedItem } from "./Components/Buttons";
 import { TopBar } from "./Components/Visual";
 import { Person } from "./Classes";
 

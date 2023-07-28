@@ -1,4 +1,3 @@
-import { useEffect } from "preact/hooks";
 import { Tooltip } from "../Table";
 import { Person } from "../../Classes";
 import { AnimatePresence, motion } from "framer-motion";
