@@ -1,5 +1,5 @@
-import { useEffect, useState } from "preact/hooks";
-import { JSX } from "preact";
+import { MutableRef, useEffect, useState } from "preact/hooks";
+import { JSX, RefObject } from "preact";
 import { ForwardedRef, forwardRef } from "preact/compat";
 import { Person } from "../../../Classes";
 import {
@@ -9,6 +9,7 @@ import {
   useAnimationControls,
 } from "framer-motion";
 
+import { InputField } from "../../Common";
 import { ISharedItem, DisplayType, ItemsDisplay, TotalDisplay } from "./index";
 
 const Row = forwardRef(
@@ -97,18 +98,20 @@ const Row = forwardRef(
         >
           {name}
         </p>
-        <motion.input
-          ref={ref}
-          title={name}
-          key={props.passedKey}
-          animate={errorAnimation}
-          transition={{ duration: 0.5 }}
-          className="border self-center rounded"
-          onKeyDown={(e: any) => e.keyCode === 13 && handleInput(e)}
-          onBlur={handleInput}
-          type="number"
-          inputMode="decimal"
-        ></motion.input>
+        <InputField
+          name={name}
+          ref={ref as RefObject<HTMLInputElement>}
+          handleInput={handleInput}
+          passedKey={props.passedKey}
+          errorCondition={(e: any) => {
+            const val = parseFloat(e.target.value);
+            return isNaN(val) || val <= 0;
+          }}
+          secondaryErrorCondition={() =>
+            props.limit !== undefined && items.length >= props.limit
+          }
+          numeric
+        />
         <ItemsDisplay
           items={items}
           removeItem={removeItem}

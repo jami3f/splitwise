@@ -1,3 +1,4 @@
+import "preact/debug";
 import {
   useState,
   useRef,
@@ -10,7 +11,7 @@ import {
   MaxPromotionTotal
 } from "./Components/Table";
 import { SubtotalView, TotalView } from "./Components/Totals";
-import { CreateSharedItem } from "./Components/Buttons";
+import { CreatePerson, CreateSharedItem } from "./Components/Buttons";
 import { TopBar } from "./Components/Visual";
 import { Person } from "./Classes";
 
@@ -149,7 +150,7 @@ export function App() {
             ></Row>
           ))}
           <div className="flex flex-row items-center">
-            {/* <CreatePerson /> */}
+            <CreatePerson />
             <CreateSharedItem
               {...{
                 selection,
