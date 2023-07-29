@@ -7,6 +7,7 @@ import {
 import { RefObject } from "preact";
 import { forwardRef, ForwardedRef } from "preact/compat";
 import { StateUpdater } from "preact/hooks";
+import { inputErrorKeyframes } from "../../assets/Keyframes";
 
 const ENTER_KEYCODE = 13;
 
@@ -15,74 +16,45 @@ const InputField = forwardRef(
     props: {
       name: string;
       passedKey: number;
-      handleInput: (e: string) => void;
+      handleInput: (e: any) => void;
       handleEmpty?: () => void;
       numeric?: boolean;
       errorCondition?: (e: any) => boolean;
-      secondaryErrorCondition?: (e: any) => boolean;
+      className?: string;
     },
     ref: ForwardedRef<HTMLInputElement>
   ) => {
     const parseInput = (
       e: any,
-      handleInput: (e: string) => void,
+      handleInput: (e: any) => void,
       handleEmpty?: () => void,
-      errorCondition?: (e: any) => boolean,
-      secondaryErrorCondition?: (e: any) => boolean
+      errorCondition?: (e: any) => boolean
     ) => {
       if (e.target.value === "") return handleEmpty?.();
       if (errorCondition && errorCondition(e)) {
-        errorAnimation.start(errorAnimationKeyframes);
+        inputErrorAnimation.start(inputErrorKeyframes);
         return ((e.target as HTMLInputElement).value = "");
       }
-      if (secondaryErrorCondition && secondaryErrorCondition(e)) {
-        secondaryErrorAnimation.start(secondaryErrorAnimationKeyframes);
-        return ((e.target as HTMLInputElement).value = "");
-      }
-      handleInput(e.target.value);
+      handleInput(e);
     };
 
-    const errorAnimation = useAnimationControls();
-    const errorAnimationKeyframes: ControlsAnimationDefinition = {
-      x: [-5, 5, -5, 5, -5, 0],
-      outlineColor: [
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(0, 0, 0)",
-      ],
-    };
-    const secondaryErrorAnimation = useAnimationControls();
-    const secondaryErrorAnimationKeyframes: ControlsAnimationDefinition = {
-      x: [-2, 2, -2, 2, -2, 0],
-      color: [
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(0, 0, 0)",
-      ],
-    };
+    const inputErrorAnimation = useAnimationControls();
 
     return (
       <motion.input
         ref={ref}
         title={props.name}
         key={props.passedKey}
-        animate={errorAnimation}
+        animate={inputErrorAnimation}
         transition={{ duration: 0.5 }}
-        className="border self-center rounded"
+        className={`border self-center rounded ${props.className}`}
         onKeyDown={(e: any) =>
           e.keyCode === ENTER_KEYCODE &&
           parseInput(
             e,
             props.handleInput,
             props.handleEmpty,
-            props.errorCondition,
-            props.secondaryErrorCondition
+            props.errorCondition
           )
         }
         onBlur={(e: any) =>
@@ -90,8 +62,7 @@ const InputField = forwardRef(
             e,
             props.handleInput,
             props.handleEmpty,
-            props.errorCondition,
-            props.secondaryErrorCondition
+            props.errorCondition
           )
         }
         {...(props.numeric

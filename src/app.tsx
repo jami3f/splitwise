@@ -1,14 +1,11 @@
 import "preact/debug";
-import {
-  useState,
-  useRef,
-  useEffect
-} from "preact/hooks";
+import { useState, useRef, useEffect } from "preact/hooks";
 import { RefObject } from "preact";
 import {
   Headings,
-  Row, PromotionTotal,
-  MaxPromotionTotal
+  Row,
+  PromotionTotal,
+  MaxPromotionTotal,
 } from "./Components/Table";
 import { SubtotalView, TotalView } from "./Components/Totals";
 import { CreatePerson, CreateSharedItem } from "./Components/Buttons";
@@ -27,12 +24,12 @@ function showToolTip(e: Event, ref: RefObject<HTMLDivElement>) {
 }
 
 export function App() {
-  const people: { [key: string]: Person } = {
-    Dan: new Person("Dan", 3),
-    Jamie: new Person("Jamie", 4),
-    Leena: new Person("Leena", 5),
-    Sophie: new Person("Sophie", 6),
-  };
+  // const people: { [key: string]: Person } = {
+  //   Dan: new Person("Dan", 3),
+  //   Jamie: new Person("Jamie", 4),
+  //   Leena: new Person("Leena", 5),
+  //   Sophie: new Person("Sophie", 6),
+  // };
 
   function handleNameClick(event: Event) {
     const name = (event.target as HTMLParagraphElement).innerText;
@@ -49,6 +46,7 @@ export function App() {
   promotion.limit = 1;
   maxPromotion.limit = 1;
 
+  const [people, setPeople] = useState<{ [key: string]: Person }>({});
   const [shared, setShared] = useState<Person[][]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selection, setSelection] = useState<Person[]>([]);
@@ -93,9 +91,7 @@ export function App() {
             name="Promotion (%)"
             handleNameClick={() => {}}
             limit={1}
-            ref={(el: HTMLInputElement | null) =>
-              (inputRefs.current[0] = el)
-            }
+            ref={(el: HTMLInputElement | null) => (inputRefs.current[0] = el)}
             refocus={refocus}
           >
             <PromotionTotal
@@ -110,9 +106,7 @@ export function App() {
             people={[maxPromotion]}
             limit={1}
             handleNameClick={() => {}}
-            ref={(el: HTMLInputElement | null) =>
-              (inputRefs.current[1] = el)
-            }
+            ref={(el: HTMLInputElement | null) => (inputRefs.current[1] = el)}
             refocus={refocus}
           >
             <MaxPromotionTotal
@@ -126,9 +120,7 @@ export function App() {
             className="text-orange-500"
             people={[service]}
             handleNameClick={() => {}}
-            ref={(el: HTMLInputElement | null) =>
-              (inputRefs.current[2] = el)
-            }
+            ref={(el: HTMLInputElement | null) => (inputRefs.current[2] = el)}
             refocus={refocus}
           />
           {Object.values(people).map((person) => (
@@ -150,7 +142,7 @@ export function App() {
             ></Row>
           ))}
           <div className="flex flex-row items-center">
-            <CreatePerson />
+            <CreatePerson setPeople={setPeople} />
             <CreateSharedItem
               {...{
                 selection,

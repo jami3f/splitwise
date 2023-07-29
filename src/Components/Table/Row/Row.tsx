@@ -12,6 +12,8 @@ import {
 import { InputField } from "../../Common";
 import { ISharedItem, DisplayType, ItemsDisplay, TotalDisplay } from "./index";
 
+import { itemErrorKeyframes } from "../../../assets/Keyframes";
+
 const Row = forwardRef(
   (
     props: {
@@ -35,6 +37,7 @@ const Row = forwardRef(
         p.addItem({ id: p.id, price: price / props.people.length })
       );
     }
+    
     function removeItem(ids: number[]) {
       const compArrays = (a: number[], b: number[]) => {
         if (a.length !== b.length) return false;
@@ -47,41 +50,12 @@ const Row = forwardRef(
     const promotion = props.name === "Promotion";
     let name = props.name || props.people.map((p) => p.name).join("\n");
 
-    const errorAnimation = useAnimationControls();
-    const errorAnimationKeyframes: ControlsAnimationDefinition = {
-      x: [-5, 5, -5, 5, -5, 0],
-      outlineColor: [
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(0, 0, 0)",
-      ],
-    };
-    const itemErrorAnimation = useAnimationControls();
-    const itemErrorAnimationKeyframes: ControlsAnimationDefinition = {
-      x: [-2, 2, -2, 2, -2, 0],
-      color: [
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(255, 0, 0)",
-        "rgb(0, 0, 0)",
-      ],
-    };
-
     const handleInput = (e: any) => {
-      if (e.target.value === "") return;
-      const newValue = parseFloat(e.target.value);
-      if (isNaN(newValue) || newValue <= 0) {
-        errorAnimation.start(errorAnimationKeyframes);
-        return ((e.target as HTMLInputElement).value = "");
-      } else if (props.limit && items.length >= props.limit) {
-        itemErrorAnimation.start(itemErrorAnimationKeyframes);
+      if (props.limit !== undefined && items.length >= props.limit) {
+        itemErrorAnimation.start(itemErrorKeyframes);
         return ((e.target as HTMLInputElement).value = "");
       }
+      const newValue = parseFloat(e.target.value);
       if (promotion) {
         updateItems([{ ids: [0], price: newValue }]);
         props.people[0].setItems([{ id: 0, price: newValue }]);
@@ -89,6 +63,8 @@ const Row = forwardRef(
       e.target.value = "";
       props.refocus(props.passedKey);
     };
+
+    const itemErrorAnimation = useAnimationControls();
 
     return (
       <div id="item-entry" className="p-2 grid grid-cols-7 gap-x-2 border-b">
@@ -107,9 +83,6 @@ const Row = forwardRef(
             const val = parseFloat(e.target.value);
             return isNaN(val) || val <= 0;
           }}
-          secondaryErrorCondition={() =>
-            props.limit !== undefined && items.length >= props.limit
-          }
           numeric
         />
         <ItemsDisplay
