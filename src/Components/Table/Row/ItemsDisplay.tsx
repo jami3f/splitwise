@@ -1,10 +1,10 @@
-import ISharedItem from "./ISharedItem";
-import DisplayType from "./DisplayType";
+import { DisplayType } from "../../../Types/DisplayType";
 import { AnimationControls, motion } from "framer-motion";
 import { cancel } from "../../../assets/icons";
+import { Item } from "../../../Types";
 export default function ItemsDisplay(props: {
-  items: ISharedItem[];
-  removeItem: (ids: number[]) => void;
+  items: Item[];
+  removeItem: (id: string) => void;
   type: DisplayType;
   itemErrorAnimation: AnimationControls;
 }) {
@@ -17,14 +17,14 @@ export default function ItemsDisplay(props: {
             animate={props.itemErrorAnimation}
             transition={{ duration: 0.5 }}
           >
-            {props.type === DisplayType.Price && "£"}
+            {props.type === "Price" && "£"}
             {item.price.toFixed(2).toString()}
-            {props.type === DisplayType.Percent && "%"}
+            {props.type === "Percent" && "%"}
           </motion.span>
           <button
             title="Remove"
             type="button"
-            onClick={() => props.removeItem(item.ids)}
+            onClick={() => props.removeItem(item.id)}
             tabIndex={-1}
           >
             <img src={cancel} alt="remove" className="w-3" />

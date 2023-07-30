@@ -2,6 +2,7 @@ import { StateUpdater, useEffect, useRef, useState } from "preact/hooks";
 import { Person } from "../../Types";
 import { add } from "../../assets/icons";
 import { InputField } from "../Common";
+import Button from "./Button";
 export default function CreatePerson(props: {
   people: { [key: string]: Person };
   setPeople: StateUpdater<{ [key: string]: Person }>;
@@ -17,14 +18,7 @@ export default function CreatePerson(props: {
       setInputMode={setInputMode}
     />
   ) : (
-    <button
-      className=" bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold text-sm my-2 ml-2 py-2 px-2 rounded inline-flex items-center transition-colors"
-      type="button"
-      onClick={handleClick}
-    >
-      <img alt="add icon" src={add} className="w-5 mr-1"></img>
-      Add Person
-    </button>
+    <Button text="Add Person" handleClick={handleClick} icon={add} />
   );
 }
 
@@ -40,29 +34,23 @@ function NameInput(props: {
   return (
     <InputField
       name="New User"
-      passedKey={5}
+      passedKey={10}
       ref={inputRef}
       handleEmpty={() => {
-        console.log("Empty");
         props.setInputMode(false);
       }}
       handleInput={(e: any) => {
-        const newPerson: Person = {
-          name: e.target.value,
-          items: [],
-          total: 0,
-          id: Object.keys(props.people).length,
-        };
-        localStorage.setItem(
-          "people",
-          JSON.stringify({ ...props.people, [newPerson.name]: newPerson })
-        );
-        console.log(localStorage.getItem("people"));
+        const input = (e.target.value as string).trim();
+        const name = input
+          .split(" ")
+          .map((n) => n.charAt(0).toUpperCase() + n.slice(1))
+          .join(" ");
+        console.log("Creating person: " + name);
         props.setPeople((old) => {
           return {
             ...old,
-            [e.target.value]: {
-              name: e.target.value,
+            [name]: {
+              name: name,
               items: [],
               total: 0,
               id: Object.keys(old).length,

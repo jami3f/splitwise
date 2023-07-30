@@ -1,4 +1,5 @@
 export type Item = {
-  id: number;
+  id: string;
   price: number;
+  sharedBetween?: number;
 }

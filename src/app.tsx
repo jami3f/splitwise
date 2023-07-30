@@ -8,7 +8,7 @@ import {
   MaxPromotionTotal,
 } from "./Components/Table";
 import { SubtotalView, TotalView } from "./Components/Totals";
-import { CreatePerson, CreateSharedItem } from "./Components/Buttons";
+import { Button, CreatePerson, CreateSharedItem } from "./Components/Buttons";
 import { TopBar } from "./Components/Visual";
 import { Item, Person } from "./Types";
 
@@ -56,8 +56,7 @@ export function App() {
   };
   const service: Person = { name: "Service", items: [], total: 0, id: -1 };
 
-  const savedPeople = JSON.parse(localStorage.getItem("people") || "{}");
-  const [people, setPeople] = useState<{ [key: string]: Person }>(savedPeople);
+  const [people, setPeople] = useState<{ [key: string]: Person }>({});
   const [shared, setShared] = useState<Person[][]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selection, setSelection] = useState<Person[]>([]);
@@ -66,7 +65,35 @@ export function App() {
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
+    console.log(localStorage.getItem("people"));
+    const savedPeople: string[] = JSON.parse(
+      localStorage.getItem("people") || "[]"
+    );
+    let idCount = 0;
+    setPeople(() =>
+      savedPeople.reduce(
+        (_: { [name: string]: Person }, name: string) => ({
+          [name]: {
+            name: name,
+            items: [],
+            total: 0,
+            id: idCount++,
+          },
+        }),
+        {}
+      )
+    );
+    console.log(people);
   }, []);
+
+  useEffect(() => {
+    console.log(people);
+    localStorage.setItem("people", JSON.stringify(Object.keys(people)));
+  }, [people]);
+
+  // useEffect(() => {
+  //   console.log("name changed");
+  // }, [Object.values(people).map((p) => p.name)]);
 
   useEffect(() => {
     const totalLength = Object.keys(people).length + shared.length + 3;
@@ -88,7 +115,7 @@ export function App() {
       <TopBar />
       <div
         id="section-container"
-        className="grid md:grid-cols-65/35 grid-rows-2 md:pt-20 md:pl-20 md:pr-20"
+        className="grid md:grid-cols-65/35 md:pt-20 md:pl-20 md:pr-20"
       >
         <div
           id="item-entry-container"
@@ -97,6 +124,7 @@ export function App() {
           <Headings />
           <Row
             names={["Promotion (%)"]}
+            setPeople={setPeople}
             passedKey={keyCount++}
             className="text-green-700"
             people={[promotion, maxPromotion, ...Object.values(people)]}
@@ -114,6 +142,7 @@ export function App() {
           </Row>
           <Row
             names={["Promotion Cap"]}
+            setPeople={setPeople}
             passedKey={keyCount++}
             className="text-green-500"
             people={[maxPromotion]}
@@ -130,6 +159,7 @@ export function App() {
           </Row>
           <Row
             names={["Service"]}
+            setPeople={setPeople}
             passedKey={keyCount++}
             className="text-orange-500"
             people={[service]}
@@ -140,6 +170,7 @@ export function App() {
           {Object.values(people).map((person) => (
             <Row
               names={[person.name]}
+              setPeople={setPeople}
               passedKey={keyCount++}
               className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
               people={[person]}
@@ -149,6 +180,7 @@ export function App() {
           ))}
           {shared.map((people) => (
             <Row
+              setPeople={setPeople}
               names={people.map((p) => p.name)}
               passedKey={keyCount++}
               className="text-gray-700"
@@ -180,6 +212,7 @@ export function App() {
             people={Object.values(people)}
           />
         </div>
+        <Button text="Clear People" handleClick={() => setPeople({})} />
       </div>
     </div>
   );

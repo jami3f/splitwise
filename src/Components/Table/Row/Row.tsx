@@ -1,61 +1,74 @@
 import { MutableRef, StateUpdater, useEffect, useState } from "preact/hooks";
 import { JSX, RefObject } from "preact";
 import { ForwardedRef, forwardRef } from "preact/compat";
-import { Person } from "../../../Types";
+import { Item, Person } from "../../../Types";
 import {
   AnimationControls,
   ControlsAnimationDefinition,
   motion,
   useAnimationControls,
 } from "framer-motion";
+import { v4 as uuid } from "uuid";
 
 import { InputField } from "../../Common";
-import { ISharedItem, DisplayType, ItemsDisplay, TotalDisplay } from "./index";
+import { ItemsDisplay, TotalDisplay } from "./index";
 
 import { itemErrorKeyframes } from "../../../assets/Keyframes";
+import { DisplayType } from "../../../Types";
 
 const Row = forwardRef(
   (
     props: {
       names: string[];
       people: Person[];
+      setPeople: StateUpdater<{ [key: string]: Person }>;
       handleNameClick: (event: Event) => void;
       passedKey: number;
       refocus: Function;
       className?: string;
-      name?: string;
       limit?: number;
       children?: JSX.Element;
       usePercentage?: boolean;
     },
     ref: ForwardedRef<HTMLInputElement>
   ) => {
-    const [items, updateItems] = useState<ISharedItem[]>([]);
+    const [items, updateItems] = useState<Item[]>([]);
 
     useEffect(() => {
+      for (name of props.names) {
+        props.setPeople((old) => ({
+          ...old,
+          [name]: { ...old[name], items: items },
+        }));
+      }
+
+      // ------------------------------------------------------
       const total =
         items.reduce((acc, cur) => acc + cur.price, 0) / props.names.length;
-      // for (name of props.names) {
-      //   props.setTotals((old) => ({ ...old, [name]: total }));
-      // }
+      for (name of props.names) {
+        props.setPeople((old) => ({
+          ...old,
+          [name]: { ...old[name], total: old[name].total + total },
+        }));
+      }
     }, [items]);
 
     function addItem(price: number) {
-      const ids = props.people.map((p) => p.id);
-      updateItems((old) => [...old, { ids, price }]);
-      // props.people.forEach((p) =>
-      //   p.addItem({ id: p.id, price: price / props.people.length })
-      // );
+      updateItems((old) => [...old, { id: uuid(), price: price }]);
     }
 
-    function removeItem(ids: number[]) {
-      const compArrays = (a: number[], b: number[]) => {
-        if (a.length !== b.length) return false;
-        return a.every((v, i) => v === b[i]);
-      };
-      updateItems((old) => old.filter((i) => !compArrays(i.ids, ids)));
-      // props.people.forEach((p, index) => p.removeItem(ids[index]));
+    function removeItem(id: string) {
+      updateItems((old) => old.filter((i) => i.id !== id));
     }
+
+    // function removeItem(ids: number[]) {
+    //   const compArrays = (a: number[], b: number[]) => {
+    //     if (a.length !== b.length) return false;
+    //     return a.every((v, i) => v === b[i]);
+    //   };
+    //   updateItems((old) => old.filter((i) => !compArrays(i.ids, ids)));
+    // props.people.forEach((p, index) => p.removeItem(ids[index]));
+    // }
 
     let name = props.names.join("\n");
 
@@ -65,10 +78,7 @@ const Row = forwardRef(
         return ((e.target as HTMLInputElement).value = "");
       }
       const newValue = parseFloat(e.target.value);
-      if (props.usePercentage) {
-        updateItems([{ ids: [0], price: newValue }]);
-        // props.people[0].setItems([{ id: 0, price: newValue }]);
-      } else addItem(newValue);
+      addItem(newValue);
       e.target.value = "";
       props.refocus(props.passedKey);
     };
@@ -97,7 +107,7 @@ const Row = forwardRef(
         <ItemsDisplay
           items={items}
           removeItem={removeItem}
-          type={props.usePercentage ? DisplayType.Percent : DisplayType.Price}
+          type={props.usePercentage ? "Percent" : "Price"}
           itemErrorAnimation={itemErrorAnimation}
         />
         {props.children ? (

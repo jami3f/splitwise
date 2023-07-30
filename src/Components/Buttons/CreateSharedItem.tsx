@@ -1,6 +1,7 @@
 import { StateUpdater } from "preact/hooks";
 import { add, cancel, done } from "../../assets/icons";
 import { Person } from "../../Types";
+import Button from "./Button";
 
 export default function CreateSharedItem(props: {
   selection: Person[];
@@ -19,14 +20,11 @@ export default function CreateSharedItem(props: {
       setShared={props.setShared}
     />
   ) : (
-    <button
-      className=" bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold text-sm m-2 py-2 px-2 rounded inline-flex items-center transition-colors"
-      type="button"
-      onClick={() => props.setSelectionMode(true)}
-    >
-      <img alt="add icon" src={add} className="w-5 mr-1"></img>
-      Add Shared Item
-    </button>
+    <Button
+      text="Add Shared Item"
+      handleClick={() => props.setSelectionMode(true)}
+      icon={add}
+    />
   );
 }
 
