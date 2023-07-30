@@ -1,11 +1,15 @@
 export default function Button(props: {
+  className?: string;
   text: string;
   handleClick: () => void;
   icon?: string;
 }) {
   return (
     <button
-      className=" bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold text-sm my-2 ml-2 py-2 px-2 rounded inline-flex items-center transition-colors"
+      className={
+        (props.className || "") +
+        " bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold text-sm m-2 p-2 rounded flex items-center justify-around transition-colors"
+      }
       type="button"
       onClick={props.handleClick}
     >

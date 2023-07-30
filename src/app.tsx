@@ -1,10 +1,7 @@
 import "preact/debug";
 import { useState, useRef, useEffect } from "preact/hooks";
 import { RefObject } from "preact";
-import {
-  Headings,
-  Row,
-} from "./Components/Table";
+import { Headings, Row } from "./Components/Table";
 import { SubtotalView, TotalView } from "./Components/Totals";
 import { Button, CreatePerson, CreateSharedItem } from "./Components/Buttons";
 import { TopBar } from "./Components/Visual";
@@ -56,15 +53,15 @@ export function App() {
     const savedPeople: string[] = JSON.parse(
       localStorage.getItem("people") || "[]"
     );
-    let idCount = 0;
+
     setPeople(() =>
       savedPeople.reduce(
-        (_: { [name: string]: Person }, name: string) => ({
+        (_: { [name: string]: Person }, name: string, i: number) => ({
           [name]: {
             name: name,
             items: [],
             total: 0,
-            id: idCount++,
+            id: i,
           },
         }),
         {}
@@ -100,73 +97,86 @@ export function App() {
   return (
     <div className="w-screen overflow-hidden">
       <TopBar />
-        <Promotion promotion={promotion} className="" passedKey={-3} setPromotion={setPromotion} />
-        <PromotionCap />
-      <div
-        id="section-container"
-        className="grid md:grid-cols-65/35 md:pt-20 md:pl-20 md:pr-20"
-      >
-        <div
-          id="item-entry-container"
-          className="w-auto h-auto border-y border-l text-center"
-        >
-          <Headings />
-          <Row
-            names={["Service"]}
-            setPeople={setPeople}
-            passedKey={keyCount++}
-            className="text-orange-500"
-            people={[service]}
-            handleNameClick={() => {}}
-            ref={(el: HTMLInputElement | null) => (inputRefs.current[2] = el)}
-            refocus={refocus}
-          />
-          {Object.values(people).map((person) => (
-            <Row
-              names={[person.name]}
-              setPeople={setPeople}
-              passedKey={keyCount++}
-              className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
-              people={[person]}
-              handleNameClick={handleNameClick}
-              refocus={refocus}
-            />
-          ))}
-          {shared.map((people) => (
-            <Row
-              setPeople={setPeople}
-              names={people.map((p) => p.name)}
-              passedKey={keyCount++}
-              className="text-gray-700"
-              people={[...people]}
-              handleNameClick={() => {}}
-              refocus={refocus}
-            ></Row>
-          ))}
-          <div className="flex flex-row items-center">
-            <CreatePerson people={people} setPeople={setPeople} />
-            <CreateSharedItem
-              {...{
-                selection,
-                setSelection,
-                selectionMode,
-                setSelectionMode,
-                shared,
-                setShared,
-              }}
-            />
-          </div>
-        PP</div>
-        <div className="grid grid-cols-2 border w-full">
-          <SubtotalView people={[...Object.values(people), service]} />
-          <TotalView
+      <div className="md:pt-20 md:pl-20 md:pr-20">
+        <div className="w-1/3 flex flex-col divide-y justify-center border-x border-t rounded-t">
+          <Promotion
             promotion={promotion}
-            maxPromotion={promotionCap}
-            service={service.total}
-            people={Object.values(people)}
+            passedKey={-3}
+            setPromotion={setPromotion}
+          />
+          <PromotionCap
+            passedKey={-2}
+            promotionCap={promotionCap}
+            setPromotionCap={setPromotionCap}
           />
         </div>
-        <Button text="Clear People" handleClick={() => setPeople({})} />
+        <div id="section-container" className="grid md:grid-cols-65/35">
+          <div
+            id="item-entry-container"
+            className="w-auto h-auto border-y border-l text-center rounded-bl"
+          >
+            <Headings />
+            <Row
+              names={["Service"]}
+              setPeople={setPeople}
+              passedKey={keyCount++}
+              className="text-orange-500"
+              people={[service]}
+              handleNameClick={() => {}}
+              ref={(el: HTMLInputElement | null) => (inputRefs.current[2] = el)}
+              refocus={refocus}
+            />
+            {Object.values(people).map((person) => (
+              <Row
+                names={[person.name]}
+                setPeople={setPeople}
+                passedKey={keyCount++}
+                className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
+                people={[person]}
+                handleNameClick={handleNameClick}
+                refocus={refocus}
+              />
+            ))}
+            {shared.map((people) => (
+              <Row
+                setPeople={setPeople}
+                names={people.map((p) => p.name)}
+                passedKey={keyCount++}
+                className="text-gray-700"
+                people={[...people]}
+                handleNameClick={() => {}}
+                refocus={refocus}
+              ></Row>
+            ))}
+            <div className="flex flex-row items-center">
+              <CreatePerson people={people} setPeople={setPeople} />
+              <CreateSharedItem
+                {...{
+                  selection,
+                  setSelection,
+                  selectionMode,
+                  setSelectionMode,
+                  shared,
+                  setShared,
+                }}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 border w-full rounded-r">
+            <SubtotalView people={[...Object.values(people), service]} />
+            <TotalView
+              promotion={promotion}
+              maxPromotion={promotionCap}
+              service={service.total}
+              people={Object.values(people)}
+            />
+          </div>
+          <Button
+            text="Clear People"
+            handleClick={() => setPeople({})}
+            className="w-28"
+          />
+        </div>
       </div>
     </div>
   );

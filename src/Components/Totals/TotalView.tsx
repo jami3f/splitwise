@@ -28,7 +28,7 @@ export default function TotalView(props: {
       )
         // doesn't hit max promotion - applies promotion to each person's order
         return total * ((100 - truePromotion) / 100);
-      // hits max promotion and calculates how much to take off each person's order
+      // hits max promotion and calculates how much to take off each person's order - weighted by how much they spent
       else return total - (total / grandTotal) * trueMaxPromotion;
     };
     const totals = peopleFiltered.map((person) => {

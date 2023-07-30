@@ -6,23 +6,24 @@ import { InputField } from "../Common";
 const Promotion = forwardRef(
   (
     props: {
-      className: string;
       passedKey: number;
       promotion: number | undefined;
       setPromotion: StateUpdater<number|undefined>;
+      className?: string;
     },
     ref: ForwardedRef<HTMLInputElement>
   ) => {
     const handleInput = (e: any) => {
-      props.setPromotion(parseFloat(e.target.value));
+      props.setPromotion(() => parseFloat(e.target.value));
+      console.log(props.promotion)
     };
     return (
-      <div id="item-entry" className="p-2 grid grid-cols-7 gap-x-2 border-b">
-        <p className={"self-center col-span-2" + " " + props.className}>
+      <div className="flex justify-around p-2">
+        <p className={"text-green-700" +" " + props.className}>
           Promotion (%)
         </p>
-        {props.promotion ? (
-          <div>{props.promotion == 0 ? "No promotion" : props.promotion}</div>
+        {props.promotion !== undefined ? (
+          <div>{props.promotion == 0 ? "No Promotion" : props.promotion + "%"}</div>
         ) : (
           <InputField
             name="Promotion"
@@ -31,8 +32,9 @@ const Promotion = forwardRef(
             passedKey={props.passedKey}
             errorCondition={(e: any) => {
               const val = parseFloat(e.target.value);
-              return isNaN(val) || val <= 0;
+              return isNaN(val) || val < 0;
             }}
+            className="w-20"
             numeric
           />
         )}
