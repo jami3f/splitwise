@@ -1,6 +1,5 @@
-import { Person } from "../../../Types";
-import ISharedItem from "./ISharedItem";
-export default function TotalDisplay(props: { people: Person[]; items: ISharedItem[] }) {
+import { Item, Person } from "../../../Types";
+export default function TotalDisplay(props: { people: Person[]; items: Item[] }) {
   return (
     <p className="col-span-2 inline">
       {props.people.map((p, _, arr) => {

@@ -4,13 +4,12 @@ import { RefObject } from "preact";
 import {
   Headings,
   Row,
-  PromotionTotal,
-  MaxPromotionTotal,
 } from "./Components/Table";
 import { SubtotalView, TotalView } from "./Components/Totals";
 import { Button, CreatePerson, CreateSharedItem } from "./Components/Buttons";
 import { TopBar } from "./Components/Visual";
 import { Item, Person } from "./Types";
+import { Promotion, PromotionCap } from "./Components/Promotion";
 
 function showToolTip(e: Event, ref: RefObject<HTMLDivElement>) {
   const target = e.target as HTMLElement;
@@ -40,20 +39,8 @@ export function App() {
     setSelection((old) => [...old, people[name]]);
   }
 
-  const promotion: Person = {
-    name: "Promotion",
-    items: [],
-    total: 0,
-    id: -3,
-    limit: 1,
-  };
-  const maxPromotion: Person = {
-    name: "Promotion Cap",
-    items: [],
-    total: 0,
-    id: -2,
-    limit: 1,
-  };
+  const [promotion, setPromotion] = useState<number>();
+  const [promotionCap, setPromotionCap] = useState<number>();
   const service: Person = { name: "Service", items: [], total: 0, id: -1 };
 
   const [people, setPeople] = useState<{ [key: string]: Person }>({});
@@ -113,6 +100,8 @@ export function App() {
   return (
     <div className="w-screen overflow-hidden">
       <TopBar />
+        <Promotion promotion={promotion} className="" passedKey={-3} setPromotion={setPromotion} />
+        <PromotionCap />
       <div
         id="section-container"
         className="grid md:grid-cols-65/35 md:pt-20 md:pl-20 md:pr-20"
@@ -122,41 +111,6 @@ export function App() {
           className="w-auto h-auto border-y border-l text-center"
         >
           <Headings />
-          <Row
-            names={["Promotion (%)"]}
-            setPeople={setPeople}
-            passedKey={keyCount++}
-            className="text-green-700"
-            people={[promotion, maxPromotion, ...Object.values(people)]}
-            handleNameClick={() => {}}
-            limit={1}
-            ref={(el: HTMLInputElement | null) => (inputRefs.current[0] = el)}
-            refocus={refocus}
-            usePercentage
-          >
-            <PromotionTotal
-              promotion={promotion.items[0]?.price}
-              maxPromotion={maxPromotion.items[0]?.price}
-              people={[...Object.values(people)]}
-            />
-          </Row>
-          <Row
-            names={["Promotion Cap"]}
-            setPeople={setPeople}
-            passedKey={keyCount++}
-            className="text-green-500"
-            people={[maxPromotion]}
-            limit={1}
-            handleNameClick={() => {}}
-            ref={(el: HTMLInputElement | null) => (inputRefs.current[1] = el)}
-            refocus={refocus}
-          >
-            <MaxPromotionTotal
-              promotion={promotion.items[0]?.price}
-              maxPromotion={maxPromotion.items[0]?.price}
-              people={[...Object.values(people)]}
-            />
-          </Row>
           <Row
             names={["Service"]}
             setPeople={setPeople}
@@ -202,12 +156,12 @@ export function App() {
               }}
             />
           </div>
-        </div>
+        PP</div>
         <div className="grid grid-cols-2 border w-full">
           <SubtotalView people={[...Object.values(people), service]} />
           <TotalView
-            promotion={promotion.total}
-            maxPromotion={maxPromotion.total}
+            promotion={promotion}
+            maxPromotion={promotionCap}
             service={service.total}
             people={Object.values(people)}
           />
