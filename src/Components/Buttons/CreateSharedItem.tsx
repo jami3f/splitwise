@@ -1,6 +1,6 @@
 import { StateUpdater } from "preact/hooks";
 import { add, cancel, done } from "../../assets/icons";
-import { Person } from "../../Classes";
+import { Person } from "../../Types";
 
 export default function CreateSharedItem(props: {
   selection: Person[];

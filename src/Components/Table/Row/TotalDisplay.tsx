@@ -1,4 +1,4 @@
-import { Person } from "../../../Classes";
+import { Person } from "../../../Types";
 import ISharedItem from "./ISharedItem";
 export default function TotalDisplay(props: { people: Person[]; items: ISharedItem[] }) {
   return (

@@ -1,4 +1,4 @@
-import { Person } from "../../Classes";
+import { Person } from "../../Types";
 export default function SubtotalView(props: { people: Person[] }) {
     return (
       <div className="p-2 border-r pr-5">

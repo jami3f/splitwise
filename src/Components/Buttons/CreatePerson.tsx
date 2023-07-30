@@ -1,8 +1,9 @@
 import { StateUpdater, useEffect, useRef, useState } from "preact/hooks";
-import { Person } from "../../Classes";
+import { Person } from "../../Types";
 import { add } from "../../assets/icons";
 import { InputField } from "../Common";
 export default function CreatePerson(props: {
+  people: { [key: string]: Person };
   setPeople: StateUpdater<{ [key: string]: Person }>;
 }) {
   const [inputMode, setInputMode] = useState(false);
@@ -10,7 +11,11 @@ export default function CreatePerson(props: {
     setInputMode(true);
   }
   return inputMode ? (
-    <NameInput setInputMode={setInputMode} setPeople={props.setPeople} />
+    <NameInput
+      people={props.people}
+      setPeople={props.setPeople}
+      setInputMode={setInputMode}
+    />
   ) : (
     <button
       className=" bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold text-sm my-2 ml-2 py-2 px-2 rounded inline-flex items-center transition-colors"
@@ -24,8 +29,9 @@ export default function CreatePerson(props: {
 }
 
 function NameInput(props: {
-  setInputMode: StateUpdater<boolean>;
+  people: { [key: string]: Person };
   setPeople: StateUpdater<{ [key: string]: Person }>;
+  setInputMode: StateUpdater<boolean>;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -41,14 +47,26 @@ function NameInput(props: {
         props.setInputMode(false);
       }}
       handleInput={(e: any) => {
-        console.log(e);
+        const newPerson: Person = {
+          name: e.target.value,
+          items: [],
+          total: 0,
+          id: Object.keys(props.people).length,
+        };
+        localStorage.setItem(
+          "people",
+          JSON.stringify({ ...props.people, [newPerson.name]: newPerson })
+        );
+        console.log(localStorage.getItem("people"));
         props.setPeople((old) => {
           return {
             ...old,
-            [e.target.value]: new Person(
-              e.target.value,
-              Object.values(old).length
-            ),
+            [e.target.value]: {
+              name: e.target.value,
+              items: [],
+              total: 0,
+              id: Object.keys(old).length,
+            },
           };
         });
         props.setInputMode(false);

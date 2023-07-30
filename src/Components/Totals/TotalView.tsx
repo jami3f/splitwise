@@ -1,4 +1,4 @@
-import { Person } from "../../Classes";
+import { Person } from "../../Types";
 
 export default function TotalView(props: {
     people: Person[];

@@ -1,5 +1,5 @@
 import { Tooltip } from "../Table";
-import { Person } from "../../Classes";
+import { Person } from "../../Types";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function PromotionTotal(props: {

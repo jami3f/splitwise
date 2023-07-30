@@ -10,7 +10,7 @@ import {
 import { SubtotalView, TotalView } from "./Components/Totals";
 import { CreatePerson, CreateSharedItem } from "./Components/Buttons";
 import { TopBar } from "./Components/Visual";
-import { Person } from "./Classes";
+import { Item, Person } from "./Types";
 
 function showToolTip(e: Event, ref: RefObject<HTMLDivElement>) {
   const target = e.target as HTMLElement;
@@ -40,13 +40,24 @@ export function App() {
     setSelection((old) => [...old, people[name]]);
   }
 
-  const promotion = new Person("Promotion (%)", 0);
-  const maxPromotion = new Person("Promotion Cap", 1);
-  const service = new Person("Service", 2);
-  promotion.limit = 1;
-  maxPromotion.limit = 1;
+  const promotion: Person = {
+    name: "Promotion",
+    items: [],
+    total: 0,
+    id: -3,
+    limit: 1,
+  };
+  const maxPromotion: Person = {
+    name: "Promotion Cap",
+    items: [],
+    total: 0,
+    id: -2,
+    limit: 1,
+  };
+  const service: Person = { name: "Service", items: [], total: 0, id: -1 };
 
-  const [people, setPeople] = useState<{ [key: string]: Person }>({});
+  const savedPeople = JSON.parse(localStorage.getItem("people") || "{}");
+  const [people, setPeople] = useState<{ [key: string]: Person }>(savedPeople);
   const [shared, setShared] = useState<Person[][]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selection, setSelection] = useState<Person[]>([]);
@@ -85,14 +96,15 @@ export function App() {
         >
           <Headings />
           <Row
+            names={["Promotion (%)"]}
             passedKey={keyCount++}
             className="text-green-700"
             people={[promotion, maxPromotion, ...Object.values(people)]}
-            name="Promotion (%)"
             handleNameClick={() => {}}
             limit={1}
             ref={(el: HTMLInputElement | null) => (inputRefs.current[0] = el)}
             refocus={refocus}
+            usePercentage
           >
             <PromotionTotal
               promotion={promotion.items[0]?.price}
@@ -101,6 +113,7 @@ export function App() {
             />
           </Row>
           <Row
+            names={["Promotion Cap"]}
             passedKey={keyCount++}
             className="text-green-500"
             people={[maxPromotion]}
@@ -116,6 +129,7 @@ export function App() {
             />
           </Row>
           <Row
+            names={["Service"]}
             passedKey={keyCount++}
             className="text-orange-500"
             people={[service]}
@@ -125,6 +139,7 @@ export function App() {
           />
           {Object.values(people).map((person) => (
             <Row
+              names={[person.name]}
               passedKey={keyCount++}
               className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
               people={[person]}
@@ -134,6 +149,7 @@ export function App() {
           ))}
           {shared.map((people) => (
             <Row
+              names={people.map((p) => p.name)}
               passedKey={keyCount++}
               className="text-gray-700"
               people={[...people]}
@@ -142,7 +158,7 @@ export function App() {
             ></Row>
           ))}
           <div className="flex flex-row items-center">
-            <CreatePerson setPeople={setPeople} />
+            <CreatePerson people={people} setPeople={setPeople} />
             <CreateSharedItem
               {...{
                 selection,
