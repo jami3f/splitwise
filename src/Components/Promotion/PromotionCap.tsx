@@ -18,13 +18,15 @@ const PromotionCap = forwardRef(
       console.log(props.promotionCap);
     };
     return (
-      <div className="flex justify-around p-2">
-        <p className={"text-green-500" + " " + props.className}>Promotion Cap</p>
+      <div className="grid grid-cols-2 justify-items-center p-2">
+        <p className={"text-green-500" + " " + props.className}>
+          Promotion Cap
+        </p>
         {props.promotionCap !== undefined ? (
           <div>
             {props.promotionCap == 0
               ? "No Promotion Cap"
-              : props.promotionCap + "%"}
+              : "£" + props.promotionCap.toFixed(2)}
           </div>
         ) : (
           <InputField

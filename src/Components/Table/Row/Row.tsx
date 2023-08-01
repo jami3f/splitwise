@@ -19,7 +19,7 @@ import { DisplayType } from "../../../Types";
 const Row = forwardRef(
   (
     props: {
-      names: string[];
+      // names: string[];
       people: Person[];
       setPeople: StateUpdater<{ [key: string]: Person }>;
       handleNameClick: (event: Event) => void;
@@ -35,11 +35,11 @@ const Row = forwardRef(
     const [items, updateItems] = useState<Item[]>([]);
 
     useEffect(() => {
-      for (name of props.names) {
+      for (const name of names) {
         props.setPeople((old) => {
           const total =
             old[name].items.reduce((acc, cur) => acc + cur.price, 0) /
-            props.names.length;
+            names.length;
           return {
             ...old,
             [name]: { ...old[name], total: total },
@@ -51,7 +51,7 @@ const Row = forwardRef(
     function addItem(price: number) {
       const newItem = { id: uuid(), price: price };
       updateItems((old) => [...old, newItem]);
-      for (name of props.names) {
+      for (const name of names) {
         props.setPeople((old) => ({
           ...old,
           [name]: { ...old[name], items: [...old[name].items, newItem] },
@@ -61,7 +61,7 @@ const Row = forwardRef(
 
     function removeItem(id: string) {
       updateItems((old) => old.filter((i) => i.id !== id));
-      for (name of props.names) {
+      for (const name of names) {
         props.setPeople((old) => ({
           ...old,
           [name]: {
@@ -72,7 +72,8 @@ const Row = forwardRef(
       }
     }
 
-    let name = props.names.join("\n");
+    const names = Object.values(props.people).map((p) => p.name);
+    const name = names.join("\n");
 
     const handleInput = (e: any) => {
       if (props.limit && items.length >= props.limit) {

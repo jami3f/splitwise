@@ -18,7 +18,7 @@ const Promotion = forwardRef(
       console.log(props.promotion)
     };
     return (
-      <div className="flex justify-around p-2">
+      <div className="grid grid-cols-2 justify-items-center p-2">
         <p className={"text-green-700" +" " + props.className}>
           Promotion (%)
         </p>

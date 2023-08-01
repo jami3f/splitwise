@@ -124,7 +124,6 @@ export function App() {
           >
             <Headings />
             <Row
-              names={["Service"]}
               people={[service["Service"]]}
               setPeople={setService}
               passedKey={keyCount++}
@@ -135,7 +134,6 @@ export function App() {
             />
             {Object.values(people).map((person) => (
               <Row
-                names={[person.name]}
                 setPeople={setPeople}
                 passedKey={keyCount++}
                 className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
@@ -147,7 +145,6 @@ export function App() {
             {shared.map((people) => (
               <Row
                 setPeople={setPeople}
-                names={people.map((p) => p.name)}
                 passedKey={keyCount++}
                 className="text-gray-700"
                 people={[...people]}
