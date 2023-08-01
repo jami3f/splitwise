@@ -38,8 +38,15 @@ export function App() {
 
   const [promotion, setPromotion] = useState<number>();
   const [promotionCap, setPromotionCap] = useState<number>();
-  const service: Person = { name: "Service", items: [], total: 0, id: -1 };
 
+  const [service, setService] = useState<{ [key: string]: Person }>({
+    Service: {
+      name: "Service",
+      items: [],
+      total: 0,
+      id: -1,
+    },
+  });
   const [people, setPeople] = useState<{ [key: string]: Person }>({});
   const [shared, setShared] = useState<Person[][]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
@@ -98,7 +105,7 @@ export function App() {
     <div className="w-screen overflow-hidden">
       <TopBar />
       <div className="md:pt-20 md:pl-20 md:pr-20">
-        <div className="w-1/3 flex flex-col divide-y justify-center border-x border-t rounded-t">
+        <div className="w-64 flex flex-col divide-y justify-center border-x border-t rounded-t">
           <Promotion
             promotion={promotion}
             passedKey={-3}
@@ -118,10 +125,10 @@ export function App() {
             <Headings />
             <Row
               names={["Service"]}
-              setPeople={setPeople}
+              people={[service["Service"]]}
+              setPeople={setService}
               passedKey={keyCount++}
               className="text-orange-500"
-              people={[service]}
               handleNameClick={() => {}}
               ref={(el: HTMLInputElement | null) => (inputRefs.current[2] = el)}
               refocus={refocus}
@@ -163,11 +170,13 @@ export function App() {
             </div>
           </div>
           <div className="grid grid-cols-2 border w-full rounded-r">
-            <SubtotalView people={[...Object.values(people), service]} />
+            <SubtotalView
+              people={[...Object.values(people), ...Object.values(service)]}
+            />
             <TotalView
               promotion={promotion}
               maxPromotion={promotionCap}
-              service={service.total}
+              service={service["Service"].total}
               people={Object.values(people)}
             />
           </div>
