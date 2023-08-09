@@ -20,13 +20,6 @@ function showToolTip(e: Event, ref: RefObject<HTMLDivElement>) {
 }
 
 export function App() {
-  // const people: { [key: string]: Person } = {
-  //   Dan: new Person("Dan", 3),
-  //   Jamie: new Person("Jamie", 4),
-  //   Leena: new Person("Leena", 5),
-  //   Sophie: new Person("Sophie", 6),
-  // };
-
   function handleNameClick(event: Event) {
     const name = (event.target as HTMLParagraphElement).innerText;
     if (selection.filter((i) => i.name === name).length > 0) {
@@ -61,20 +54,33 @@ export function App() {
       localStorage.getItem("people") || "[]"
     );
 
-    setPeople(() =>
-      savedPeople.reduce(
-        (_: { [name: string]: Person }, name: string, i: number) => ({
+    setPeople(() => {
+      console.log(
+        savedPeople.reduce(
+          (_: { [name: string]: Person }, name: string, index: number) => ({
+            [name]: {
+              name: name,
+              items: [],
+              total: 0,
+              id: index,
+            },
+          }),
+          {}
+        )
+      );
+      return savedPeople.reduce(
+        (obj: { [name: string]: Person }, name: string, index: number) => ({
+          ...obj,
           [name]: {
             name: name,
             items: [],
             total: 0,
-            id: i,
+            id: index,
           },
         }),
         {}
-      )
-    );
-    console.log(people);
+      );
+    });
   }, []);
 
   useEffect(() => {
@@ -82,17 +88,13 @@ export function App() {
     localStorage.setItem("people", JSON.stringify(Object.keys(people)));
   }, [people]);
 
-  // useEffect(() => {
-  //   console.log("name changed");
-  // }, [Object.values(people).map((p) => p.name)]);
-
   useEffect(() => {
     const totalLength = Object.keys(people).length + shared.length + 3;
     inputRefs.current = inputRefs.current.slice(0, totalLength);
-    console.log(inputRefs.current);
   }, [shared]);
 
   function refocus(index: number) {
+    console.log(index);
     if (index > 1) inputRefs.current[index]?.focus();
     else {
       inputRefs.current[index + 1]?.focus();
@@ -140,7 +142,12 @@ export function App() {
                 people={[person]}
                 handleNameClick={handleNameClick}
                 refocus={refocus}
-              />
+                ref={(el: HTMLInputElement | null) =>
+                  (inputRefs.current[person.id + 3] = el)
+                }
+              >
+                <p>{person.id + 3}</p>
+              </Row>
             ))}
             {shared.map((people) => (
               <Row
@@ -172,7 +179,7 @@ export function App() {
             />
             <TotalView
               promotion={promotion}
-              maxPromotion={promotionCap}
+              promotionCap={promotionCap}
               service={service["Service"].total}
               people={Object.values(people)}
             />
