@@ -1,5 +1,6 @@
 import { StateUpdater } from "preact/hooks";
 import { add, cancel, done } from "../../assets/icons";
+import { Clear, Done } from "@mui/icons-material";
 import { Person } from "../../Types";
 import Button from "./Button";
 
@@ -49,10 +50,10 @@ function SelectPrompt(props: {
   };
 
   return (
-    <div className="bg-gray-100 p-2">
+    <div className="bg-gray-100 px-2">
       <p className="text-gray-500">Select people to share an item:</p>
       {props.selection.map((person) => (
-        <p className={checkExists() ? "text-red-600" : ""}>{person.name}</p>
+        <p className={checkExists() && "text-red-600"}>{person.name}</p>
       ))}
       <button
         title="done"
@@ -64,7 +65,7 @@ function SelectPrompt(props: {
           props.setSelectionMode(false);
         }}
       >
-        <img src={done} alt="" />
+        <Done />
       </button>
       <button
         title="cancel"
@@ -74,7 +75,7 @@ function SelectPrompt(props: {
           props.setSelectionMode(false);
         }}
       >
-        <img src={cancel} alt="" />
+        <Clear />
       </button>
     </div>
   );

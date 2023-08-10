@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mui/icons-material": "^5.14.3",
     "framer-motion": "^9.0.7",
     "preact": "^10.11.3",
     "uuid": "^9.0.0"

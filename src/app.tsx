@@ -6,7 +6,7 @@ import { SubtotalView, TotalView } from "./Components/Totals";
 import { Button, CreatePerson, CreateSharedItem } from "./Components/Buttons";
 import { TopBar } from "./Components/Visual";
 import { Item, Person } from "./Types";
-import { Promotion, PromotionCap } from "./Components/Promotion";
+import { Modifier, Promotion, PromotionCap } from "./Components/Promotion";
 
 function showToolTip(e: Event, ref: RefObject<HTMLDivElement>) {
   const target = e.target as HTMLElement;
@@ -47,14 +47,14 @@ export function App() {
   const [inputRefs, setInputRefs] = useState<{
     [key: string]: HTMLInputElement | null;
   }>({
-    Promotion: null,
+    "Promotion (%)": null,
     "Promotion Cap": null,
     Service: null,
   });
 
   useEffect(() => {
-    inputRefs["Promotion"]?.focus();
-  }, [inputRefs["Promotion"]]);
+    inputRefs["Promotion (%)"]?.focus();
+  }, [inputRefs["Promotion (%)"]]);
 
   useEffect(() => {
     console.log(inputRefs);
@@ -98,7 +98,7 @@ export function App() {
 
   function refocus(key: string) {
     switch (key) {
-      case "Promotion":
+      case "Promotion (%)":
         inputRefs["Promotion Cap"]?.focus();
         break;
       case "Promotion Cap":
@@ -121,18 +121,34 @@ export function App() {
       <TopBar />
       <div className="md:pt-20 md:pl-20 md:pr-20">
         <div className="w-64 flex flex-col divide-y justify-center border-x border-t rounded-t">
-          <Promotion
+          {/* <Promotion
             promotion={promotion}
             setPromotion={setPromotion}
             addToRefObject={addToRefObject}
             refocus={refocus}
-          />
-          <PromotionCap
-            promotionCap={promotionCap}
-            setPromotionCap={setPromotionCap}
+          /> */}
+          <Modifier
+            name="Promotion (%)"
+            modifier={promotion}
+            setModifier={setPromotion}
             addToRefObject={addToRefObject}
             refocus={refocus}
-          />
+            colour="text-green-700"
+          >
+            {promotion == 0 ? "No Promotion" : promotion + "%"}
+          </Modifier>
+          <Modifier
+            name="Promotion Cap"
+            modifier={promotionCap}
+            setModifier={setPromotionCap}
+            addToRefObject={addToRefObject}
+            refocus={refocus}
+            colour="text-green-500"
+          >
+            {promotionCap == 0
+              ? "No Promotion Cap"
+              : "£" + promotionCap?.toFixed(2)}
+          </Modifier>
         </div>
         <div id="section-container" className="grid md:grid-cols-65/35">
           <div
@@ -156,9 +172,7 @@ export function App() {
                 handleNameClick={handleNameClick}
                 refocus={refocus}
                 addToRefObject={addToRefObject}
-              >
-                <p>{person.id + 3}</p>
-              </Row>
+              />
             ))}
             {shared.map((people) => (
               <Row

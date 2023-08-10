@@ -9,23 +9,22 @@ export default function ItemsDisplay(props: {
   itemErrorAnimation: AnimationControls;
 }) {
   return (
-    <div className="col-span-2 flex justify-center">
+    <div className="col-span-2 grid grid-cols-3 justify-center">
       {props.items.map((item, index) => (
         <div className="inline-flex mx-3 self-center">
-          <motion.span
+          <span
             className="mr-1"
-            animate={props.itemErrorAnimation}
-            transition={{ duration: 0.5 }}
           >
             {props.type === "Price" && "£"}
             {item.price.toFixed(2).toString()}
             {props.type === "Percent" && "%"}
-          </motion.span>
+          </span>
           <button
             title="Remove"
             type="button"
             onClick={() => props.removeItem(item.id)}
             tabIndex={-1}
+            className="w-3"
           >
             <img src={cancel} alt="remove" className="w-3" />
           </button>
