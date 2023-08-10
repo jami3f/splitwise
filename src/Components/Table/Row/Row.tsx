@@ -25,6 +25,7 @@ const Row = forwardRef(
       handleNameClick: (event: Event) => void;
       passedKey: number;
       refocus: Function;
+      addToRefObject?: (ref: HTMLInputElement) => void;
       className?: string;
       limit?: number;
       children?: JSX.Element;
@@ -101,6 +102,7 @@ const Row = forwardRef(
           ref={ref as RefObject<HTMLInputElement>}
           handleInput={handleInput}
           passedKey={props.passedKey}
+          addToRefObject={props.addToRefObject}
           errorCondition={(e: any) => {
             const val = parseFloat(e.target.value);
             return isNaN(val) || val <= 0;

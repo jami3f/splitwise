@@ -44,12 +44,20 @@ export function App() {
   const [shared, setShared] = useState<Person[][]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selection, setSelection] = useState<Person[]>([]);
-
-  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const [inputRefs, setInputRefs] = useState<{
+    [key: string]: HTMLInputElement | null;
+  }>({
+    Promotion: null,
+    "Promotion Cap": null,
+    Service: null,
+  });
 
   useEffect(() => {
-    inputRefs.current[0]?.focus();
-    console.log(localStorage.getItem("people"));
+    inputRefs["Promotion"]?.focus();
+  }, [inputRefs["Promotion"]]);
+
+  useEffect(() => {
+    console.log(inputRefs);
     const savedPeople: string[] = JSON.parse(
       localStorage.getItem("people") || "[]"
     );
@@ -88,17 +96,27 @@ export function App() {
     localStorage.setItem("people", JSON.stringify(Object.keys(people)));
   }, [people]);
 
-  useEffect(() => {
-    const totalLength = Object.keys(people).length + shared.length + 3;
-    inputRefs.current = inputRefs.current.slice(0, totalLength);
-  }, [shared]);
+  // useEffect(() => {
+  //   const totalLength = Object.keys(people).length + shared.length + 3;
+  //   inputRefs.current = inputRefs.current.slice(0, totalLength);
+  // }, [shared]);
 
-  function refocus(index: number) {
-    console.log(index);
-    if (index > 1) inputRefs.current[index]?.focus();
-    else {
-      inputRefs.current[index + 1]?.focus();
+  function refocus(key: string) {
+    switch (key) {
+      case "Promotion":
+        inputRefs["Promotion Cap"]?.focus();
+        break;
+      case "Promotion Cap":
+        inputRefs["Service"]?.focus();
+        break;
+      default:
+        inputRefs[key]?.focus();
     }
+  }
+
+  function addToRefObject(ref: HTMLInputElement) {
+    if (ref === null || ref === undefined) return;
+    setInputRefs((old) => ({ ...old, [ref.title]: ref }));
   }
 
   let keyCount = 0;
@@ -112,11 +130,15 @@ export function App() {
             promotion={promotion}
             passedKey={-3}
             setPromotion={setPromotion}
+            addToRefObject={addToRefObject}
+            refocus={refocus}
           />
           <PromotionCap
             passedKey={-2}
             promotionCap={promotionCap}
             setPromotionCap={setPromotionCap}
+            addToRefObject={addToRefObject}
+            refocus={refocus}
           />
         </div>
         <div id="section-container" className="grid md:grid-cols-65/35">
@@ -131,8 +153,8 @@ export function App() {
               passedKey={keyCount++}
               className="text-orange-500"
               handleNameClick={() => {}}
-              ref={(el: HTMLInputElement | null) => (inputRefs.current[2] = el)}
               refocus={refocus}
+              addToRefObject={addToRefObject}
             />
             {Object.values(people).map((person) => (
               <Row
@@ -142,9 +164,7 @@ export function App() {
                 people={[person]}
                 handleNameClick={handleNameClick}
                 refocus={refocus}
-                ref={(el: HTMLInputElement | null) =>
-                  (inputRefs.current[person.id + 3] = el)
-                }
+                addToRefObject={addToRefObject}
               >
                 <p>{person.id + 3}</p>
               </Row>
@@ -157,6 +177,7 @@ export function App() {
                 people={[...people]}
                 handleNameClick={() => {}}
                 refocus={refocus}
+                addToRefObject={addToRefObject}
               ></Row>
             ))}
             <div className="flex flex-row items-center">

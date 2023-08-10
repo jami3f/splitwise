@@ -9,18 +9,22 @@ const PromotionCap = forwardRef(
       passedKey: number;
       promotionCap: number | undefined;
       setPromotionCap: StateUpdater<number | undefined>;
+      addToRefObject: (ref: HTMLInputElement) => void;
+      refocus: (key: string) => void;
       className?: string;
     },
     ref: ForwardedRef<HTMLInputElement>
   ) => {
+    const name = "Promotion Cap"
     const handleInput = (e: any) => {
       props.setPromotionCap(() => parseFloat(e.target.value));
       console.log(props.promotionCap);
+      props.refocus(name);
     };
     return (
       <div className="grid grid-cols-2 justify-items-center p-2">
         <p className={"text-green-500" + " " + props.className}>
-          Promotion Cap
+          {name}
         </p>
         {props.promotionCap !== undefined ? (
           <div>
@@ -30,9 +34,10 @@ const PromotionCap = forwardRef(
           </div>
         ) : (
           <InputField
-            name="Promotion"
+            name={name}
             ref={ref as RefObject<HTMLInputElement>}
             handleInput={handleInput}
+            addToRefObject={props.addToRefObject}
             passedKey={props.passedKey}
             errorCondition={(e: any) => {
               const val = parseFloat(e.target.value);

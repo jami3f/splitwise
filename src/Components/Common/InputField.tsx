@@ -6,7 +6,7 @@ import {
 } from "framer-motion";
 import { RefObject } from "preact";
 import { forwardRef, ForwardedRef } from "preact/compat";
-import { StateUpdater } from "preact/hooks";
+import { StateUpdater, useEffect, useRef } from "preact/hooks";
 import { inputErrorKeyframes } from "../../assets/Keyframes";
 
 const ENTER_KEYCODE = 13;
@@ -17,6 +17,7 @@ const InputField = forwardRef(
       name: string;
       passedKey: number;
       handleInput: (e: any) => void;
+      addToRefObject?: (ref: HTMLInputElement) => void;
       handleEmpty?: () => void;
       numeric?: boolean;
       errorCondition?: (e: any) => boolean;
@@ -40,9 +41,15 @@ const InputField = forwardRef(
 
     const inputErrorAnimation = useAnimationControls();
 
+    const localRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+      props.addToRefObject?.(localRef.current as HTMLInputElement);
+    }, []);
+
     return (
       <motion.input
-        ref={ref}
+        ref={localRef}
         title={props.name}
         key={props.passedKey}
         animate={inputErrorAnimation}

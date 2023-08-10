@@ -8,27 +8,34 @@ const Promotion = forwardRef(
     props: {
       passedKey: number;
       promotion: number | undefined;
-      setPromotion: StateUpdater<number|undefined>;
+      setPromotion: StateUpdater<number | undefined>;
+      addToRefObject: (ref: HTMLInputElement) => void;
+      refocus: (key: string) => void;
       className?: string;
     },
     ref: ForwardedRef<HTMLInputElement>
   ) => {
+    const name = "Promotion";
     const handleInput = (e: any) => {
       props.setPromotion(() => parseFloat(e.target.value));
-      console.log(props.promotion)
+      console.log(props.promotion);
+      props.refocus(name);
     };
     return (
       <div className="grid grid-cols-2 justify-items-center p-2">
-        <p className={"text-green-700" +" " + props.className}>
+        <p className={"text-green-700" + " " + props.className}>
           Promotion (%)
         </p>
         {props.promotion !== undefined ? (
-          <div>{props.promotion == 0 ? "No Promotion" : props.promotion + "%"}</div>
+          <div>
+            {props.promotion == 0 ? "No Promotion" : props.promotion + "%"}
+          </div>
         ) : (
           <InputField
-            name="Promotion"
+            name={name}
             ref={ref as RefObject<HTMLInputElement>}
             handleInput={handleInput}
+            addToRefObject={props.addToRefObject}
             passedKey={props.passedKey}
             errorCondition={(e: any) => {
               const val = parseFloat(e.target.value);
