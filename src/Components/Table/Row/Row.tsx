@@ -19,11 +19,9 @@ import { DisplayType } from "../../../Types";
 const Row = forwardRef(
   (
     props: {
-      // names: string[];
       people: Person[];
       setPeople: StateUpdater<{ [key: string]: Person }>;
       handleNameClick: (event: Event) => void;
-      passedKey: number;
       refocus: Function;
       addToRefObject?: (ref: HTMLInputElement) => void;
       className?: string;
@@ -84,7 +82,7 @@ const Row = forwardRef(
       const newValue = parseFloat(e.target.value);
       addItem(newValue);
       e.target.value = "";
-      props.refocus(props.passedKey);
+      props.refocus(name);
     };
 
     const itemErrorAnimation = useAnimationControls();
@@ -101,7 +99,6 @@ const Row = forwardRef(
           name={name}
           ref={ref as RefObject<HTMLInputElement>}
           handleInput={handleInput}
-          passedKey={props.passedKey}
           addToRefObject={props.addToRefObject}
           errorCondition={(e: any) => {
             const val = parseFloat(e.target.value);

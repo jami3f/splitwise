@@ -34,7 +34,6 @@ function NameInput(props: {
   return (
     <InputField
       name="New User"
-      passedKey={10}
       ref={inputRef}
       handleEmpty={() => {
         props.setInputMode(false);

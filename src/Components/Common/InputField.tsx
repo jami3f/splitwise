@@ -15,7 +15,6 @@ const InputField = forwardRef(
   (
     props: {
       name: string;
-      passedKey: number;
       handleInput: (e: any) => void;
       addToRefObject?: (ref: HTMLInputElement) => void;
       handleEmpty?: () => void;
@@ -51,7 +50,6 @@ const InputField = forwardRef(
       <motion.input
         ref={localRef}
         title={props.name}
-        key={props.passedKey}
         animate={inputErrorAnimation}
         transition={{ duration: 0.5 }}
         className={`border self-center rounded ${props.className}`}

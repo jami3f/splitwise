@@ -96,11 +96,6 @@ export function App() {
     localStorage.setItem("people", JSON.stringify(Object.keys(people)));
   }, [people]);
 
-  // useEffect(() => {
-  //   const totalLength = Object.keys(people).length + shared.length + 3;
-  //   inputRefs.current = inputRefs.current.slice(0, totalLength);
-  // }, [shared]);
-
   function refocus(key: string) {
     switch (key) {
       case "Promotion":
@@ -128,13 +123,11 @@ export function App() {
         <div className="w-64 flex flex-col divide-y justify-center border-x border-t rounded-t">
           <Promotion
             promotion={promotion}
-            passedKey={-3}
             setPromotion={setPromotion}
             addToRefObject={addToRefObject}
             refocus={refocus}
           />
           <PromotionCap
-            passedKey={-2}
             promotionCap={promotionCap}
             setPromotionCap={setPromotionCap}
             addToRefObject={addToRefObject}
@@ -150,7 +143,6 @@ export function App() {
             <Row
               people={[service["Service"]]}
               setPeople={setService}
-              passedKey={keyCount++}
               className="text-orange-500"
               handleNameClick={() => {}}
               refocus={refocus}
@@ -159,7 +151,6 @@ export function App() {
             {Object.values(people).map((person) => (
               <Row
                 setPeople={setPeople}
-                passedKey={keyCount++}
                 className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
                 people={[person]}
                 handleNameClick={handleNameClick}
@@ -172,7 +163,6 @@ export function App() {
             {shared.map((people) => (
               <Row
                 setPeople={setPeople}
-                passedKey={keyCount++}
                 className="text-gray-700"
                 people={[...people]}
                 handleNameClick={() => {}}

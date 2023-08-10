@@ -6,7 +6,6 @@ import { InputField } from "../Common";
 const PromotionCap = forwardRef(
   (
     props: {
-      passedKey: number;
       promotionCap: number | undefined;
       setPromotionCap: StateUpdater<number | undefined>;
       addToRefObject: (ref: HTMLInputElement) => void;
@@ -38,7 +37,6 @@ const PromotionCap = forwardRef(
             ref={ref as RefObject<HTMLInputElement>}
             handleInput={handleInput}
             addToRefObject={props.addToRefObject}
-            passedKey={props.passedKey}
             errorCondition={(e: any) => {
               const val = parseFloat(e.target.value);
               return isNaN(val) || val < 0;
