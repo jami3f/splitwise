@@ -1,6 +1,6 @@
 import { StateUpdater } from "preact/hooks";
 import { add, cancel, done } from "../../assets/icons";
-import { Clear, Done } from "@mui/icons-material";
+// import { Clear, Done } from "@mui/icons-material";
 import { Person } from "../../Types";
 import Button from "./Button";
 
@@ -64,8 +64,10 @@ function SelectPrompt(props: {
           props.setSelection([]);
           props.setSelectionMode(false);
         }}
+        className="w-8"
       >
-        <Done />
+        <img src={done} alt="" />
+        {/* <Done /> */}
       </button>
       <button
         title="cancel"
@@ -74,8 +76,10 @@ function SelectPrompt(props: {
           props.setSelection([]);
           props.setSelectionMode(false);
         }}
+        className="w-8"
       >
-        <Clear />
+        <img src={cancel} alt="" />
+        {/* <Clear /> */}
       </button>
     </div>
   );

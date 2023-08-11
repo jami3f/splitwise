@@ -47,8 +47,8 @@ function InputField(props: {
       ref={localRef}
       key={props.name}
       title={props.name}
-      // animate={inputErrorAnimation}
-      // transition={{ duration: 0.5 }}
+      animate={inputErrorAnimation}
+      transition={{ duration: 0.5 }}
       className={`border self-center rounded ${props.className}`}
       onKeyDown={(e: any) =>
         e.keyCode === ENTER_KEYCODE &&

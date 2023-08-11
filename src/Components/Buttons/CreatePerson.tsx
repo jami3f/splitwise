@@ -34,7 +34,6 @@ function NameInput(props: {
   return (
     <InputField
       name="New User"
-      ref={inputRef}
       handleEmpty={() => {
         props.setInputMode(false);
       }}

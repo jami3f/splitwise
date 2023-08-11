@@ -6,18 +6,18 @@ import { SubtotalView, TotalView } from "./Components/Totals";
 import { Button, CreatePerson, CreateSharedItem } from "./Components/Buttons";
 import { TopBar } from "./Components/Visual";
 import { Item, Person } from "./Types";
-import { Modifier, Promotion, PromotionCap } from "./Components/Promotion";
+import { Modifier } from "./Components/Promotion";
 
-function showToolTip(e: Event, ref: RefObject<HTMLDivElement>) {
-  const target = e.target as HTMLElement;
-  const tooltip = ref.current;
-  if (tooltip) {
-    tooltip.style.display = "block";
-    tooltip.style.left = `${target.offsetLeft + target.offsetWidth}px`;
-    tooltip.style.top = `${target.offsetTop}px`;
-    tooltip.innerHTML = target.title;
-  }
-}
+// function showToolTip(e: Event, ref: RefObject<HTMLDivElement>) {
+//   const target = e.target as HTMLElement;
+//   const tooltip = ref.current;
+//   if (tooltip) {
+//     tooltip.style.display = "block";
+//     tooltip.style.left = `${target.offsetLeft + target.offsetWidth}px`;
+//     tooltip.style.top = `${target.offsetTop}px`;
+//     tooltip.innerHTML = target.title;
+//   }
+// }
 
 export function App() {
   function handleNameClick(event: Event) {
