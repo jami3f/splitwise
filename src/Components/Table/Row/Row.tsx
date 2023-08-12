@@ -1,12 +1,8 @@
-import { MutableRef, StateUpdater, useEffect, useState } from "preact/hooks";
-import { JSX, RefObject } from "preact";
-import { ForwardedRef, forwardRef } from "preact/compat";
+import { StateUpdater, useEffect, useState } from "preact/hooks";
+import { JSX } from "preact";
 import { Item, Person } from "../../../Types";
 import {
-  AnimationControls,
-  ControlsAnimationDefinition,
-  motion,
-  useAnimationControls,
+  useAnimationControls
 } from "framer-motion";
 import { v4 as uuid } from "uuid";
 
@@ -14,13 +10,15 @@ import { InputField } from "../../Common";
 import { ItemsDisplay, TotalDisplay } from "./index";
 
 import { itemErrorKeyframes } from "../../../assets/Keyframes";
-import { DisplayType } from "../../../Types";
+import { remove } from "../../../assets/icons";
 
 function Row(props: {
   people: Person[];
   setPeople: StateUpdater<{ [key: string]: Person }>;
   handleNameClick: (event: Event) => void;
   refocus: Function;
+  removePerson?: (name: string) => void;
+  removeState?: boolean;
   addToRefObject?: (ref: HTMLInputElement) => void;
   className?: string;
   limit?: number;
@@ -84,7 +82,20 @@ function Row(props: {
   const itemErrorAnimation = useAnimationControls();
 
   return (
-    <div id="item-entry" className="p-2 grid grid-cols-7 gap-x-2 border-b">
+    <div
+      id="item-entry"
+      className="p-2 grid grid-cols-7 gap-x-2 border-b relative"
+    >
+      {props.removeState && name !== "Service" && (
+        <button
+          title="Remove"
+          type="button"
+          className="absolute top-[calc(50%-10px)] left-2 w-5"
+          onClick={() => props.removePerson?.(name)}
+        >
+          <img src={remove} alt="" className="text-red-700" />
+        </button>
+      )}
       <p
         onClick={props.handleNameClick}
         className={"self-center col-span-2" + " " + props.className}

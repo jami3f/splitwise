@@ -49,7 +49,7 @@ function InputField(props: {
       title={props.name}
       animate={inputErrorAnimation}
       transition={{ duration: 0.5 }}
-      className={`border self-center rounded ${props.className}`}
+      className={`text-center border self-center rounded ${props.className}`}
       onKeyDown={(e: any) =>
         e.keyCode === ENTER_KEYCODE &&
         parseInput(

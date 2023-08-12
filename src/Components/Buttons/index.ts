@@ -2,3 +2,4 @@
 export { default as Button } from './Button'
 export { default as CreatePerson } from './CreatePerson'
 export { default as CreateSharedItem } from './CreateSharedItem'
+export { default as EditPeople } from './EditPeople'

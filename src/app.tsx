@@ -3,7 +3,12 @@ import { useState, useRef, useEffect } from "preact/hooks";
 import { RefObject } from "preact";
 import { Headings, Row } from "./Components/Table";
 import { SubtotalView, TotalView } from "./Components/Totals";
-import { Button, CreatePerson, CreateSharedItem } from "./Components/Buttons";
+import {
+  Button,
+  CreatePerson,
+  CreateSharedItem,
+  EditPeople,
+} from "./Components/Buttons";
 import { TopBar } from "./Components/Visual";
 import { Item, Person } from "./Types";
 import { Modifier } from "./Components/Promotion";
@@ -51,6 +56,7 @@ export function App() {
     "Promotion Cap": null,
     Service: null,
   });
+  const [removeState, setRemoveState] = useState(false);
 
   useEffect(() => {
     inputRefs["Promotion (%)"]?.focus();
@@ -92,8 +98,10 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    console.log(people);
     localStorage.setItem("people", JSON.stringify(Object.keys(people)));
+    if (Object.values(people).length == 0) {
+      setRemoveState(false);
+    }
   }, [people]);
 
   function refocus(key: string) {
@@ -114,6 +122,12 @@ export function App() {
     setInputRefs((old) => ({ ...old, [ref.title]: ref }));
   }
 
+  function removePerson(name: string) {
+    const newPeople = { ...people };
+    delete newPeople[name];
+    setPeople(newPeople);
+  }
+
   let keyCount = 0;
 
   return (
@@ -121,12 +135,6 @@ export function App() {
       <TopBar />
       <div className="md:pt-20 md:pl-20 md:pr-20">
         <div className="w-64 flex flex-col divide-y justify-center border-x border-t rounded-t">
-          {/* <Promotion
-            promotion={promotion}
-            setPromotion={setPromotion}
-            addToRefObject={addToRefObject}
-            refocus={refocus}
-          /> */}
           <Modifier
             name="Promotion (%)"
             modifier={promotion}
@@ -166,9 +174,11 @@ export function App() {
             />
             {Object.values(people).map((person) => (
               <Row
-                setPeople={setPeople}
-                className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
                 people={[person]}
+                setPeople={setPeople}
+                removePerson={removePerson}
+                removeState={removeState}
+                className={selectionMode ? "text-blue-600 cursor-pointer" : ""}
                 handleNameClick={handleNameClick}
                 refocus={refocus}
                 addToRefObject={addToRefObject}
@@ -176,9 +186,11 @@ export function App() {
             ))}
             {shared.map((people) => (
               <Row
-                setPeople={setPeople}
-                className="text-gray-700"
                 people={[...people]}
+                setPeople={setPeople}
+                removePerson={removePerson}
+                removeState={removeState}
+                className="text-gray-700"
                 handleNameClick={() => {}}
                 refocus={refocus}
                 addToRefObject={addToRefObject}
@@ -209,6 +221,9 @@ export function App() {
               people={Object.values(people)}
             />
           </div>
+        </div>
+        <div className="flex">
+          <EditPeople setRemoveState={setRemoveState} />
           <Button
             text="Clear People"
             handleClick={() => setPeople({})}

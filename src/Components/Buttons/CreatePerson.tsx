@@ -27,15 +27,18 @@ function NameInput(props: {
   setPeople: StateUpdater<{ [key: string]: Person }>;
   setInputMode: StateUpdater<boolean>;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [inputRef, setInputRef] = useState<HTMLInputElement | null>(null);
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    inputRef?.focus();
+  }, [inputRef]);
   return (
     <InputField
       name="New User"
       handleEmpty={() => {
         props.setInputMode(false);
+      }}
+      addToRefObject={(ref: HTMLInputElement) => {
+        setInputRef(ref);
       }}
       handleInput={(e: any) => {
         const input = (e.target.value as string).trim();

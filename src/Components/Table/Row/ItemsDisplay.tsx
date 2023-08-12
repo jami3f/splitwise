@@ -9,7 +9,7 @@ export default function ItemsDisplay(props: {
   itemErrorAnimation: AnimationControls;
 }) {
   return (
-    <div className="col-span-2 grid grid-cols-3 justify-center">
+    <div className="col-span-2 grid grid-cols-2 justify-center md:grid-cols-3">
       {props.items.map((item, index) => (
         <div className="inline-flex mx-3 self-center">
           <span

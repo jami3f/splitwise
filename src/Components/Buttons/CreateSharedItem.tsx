@@ -67,7 +67,6 @@ function SelectPrompt(props: {
         className="w-8"
       >
         <img src={done} alt="" />
-        {/* <Done /> */}
       </button>
       <button
         title="cancel"
@@ -79,7 +78,6 @@ function SelectPrompt(props: {
         className="w-8"
       >
         <img src={cancel} alt="" />
-        {/* <Clear /> */}
       </button>
     </div>
   );
